@@ -1,0 +1,11 @@
+# everything a run produces (datasets, checkpoints, caches, logs, outputs)
+runs/
+# host-specific
+docker/.env
+# weights fetched at setup
+*.pth
+*.ckpt
+*.pt
+*.safetensors
+__pycache__/
+*.pyc

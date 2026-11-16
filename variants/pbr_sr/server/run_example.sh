@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+# Start the official PBR-SR example (Cradle_Globe, README usage) in a DETACHED
+# container, so closing or losing the SSH session does not stop it.
+#
+#   bash variants/pbr_sr/server/run_example.sh [RUN_NAME] [official|tiled] [paper|readme]
+#     RUN_NAME  default cradle_globe_<preset>; names the container (pbrsr_<RUN_NAME>),
+#               runs/pbr_sr/<RUN_NAME>/ and runs/pbr_sr/logs/<RUN_NAME>.*
+#     official  configs/ of the submodule as shipped, no tiling (default). Needs
+#               ~26 GB VRAM: measured 15.3 GB dedicated + 11 GB spilled on the 16 GB
+#               5080, so it fits the 32 GB 5090 (not yet measured there).
+#     tiled     variants/pbr_sr/configs_tiled (only the 4 DiffBIR *_tiled flags on);
+#               what fits in 16 GB, ~31 s per pseudo-GT view on the 5080. Not used for
+#               the experiments (decided 2026-11-16: no tiling).
+#     paper     the paper's stated settings (default) - see PRESET below
+#     readme    the README usage example as written (n_iter 10000, diffbir_steps 10)
+#   N_ITER=... overrides n_iter (e.g. a short test).  DRY_RUN=1 prints the command only.
+#
+# PRESET paper - every value the paper states, mapped onto the official arguments
+# (PBR-SR, NeurIPS 2025, Sec. 3.3/3.5, Implementation Details, App. A.2). Arguments
+# whose code default already equals the paper are left at the default:
+#   paper                                   code default   set here
+#   2000 iterations                         n_iter 10000   --n_iter 2000
+#   DiffBIR denoising steps "five"          10             --diffbir_steps 5
+#   PBR consistency w_Km (metallic) 0.1     1.0 (l1, ssim) --matellic_weight_l1 0.1
+#                                                          --matellic_weight_interpolate_ssim 0.1
+#   SSIM part lambda_ssim = 10 "for all",   normal x10     --n_weight_interpolate_ssim 1.0
+#     w_Kn = 1.0                            (100 vs 10)    (pbr_interpolate_ssim_weight 10 kept)
+#   L_total = L_robust + l_pbr L_pbr        patch-consist. --pbr_patch_consistency_weight 0
+#             + l_tv L_tv (no other term)   on, w 1.0      (store_true default True: only
+#                                                          its weight can switch it off)
+#   already equal: Adam lr 1e-4 constant (StepLR step 10000 never fires in 2000 its),
+#   batch 4 views, 750 views = 15 elevations x 50, FoV 10, camera distance 3.25,
+#   pseudo-GT 1024^2 (render_res 512 x cam_big_upscale 2), robust lambda_pix 100 /
+#   lambda_reg 0.5, weight map 64^2, l_pbr 10 (pbr_loss_weight_l1), l_ssim 10
+#   (pbr_interpolate_ssim_weight), l_tv 0.5, w_Kd = w_Kr = 1.0.
+#   NOT matched: the paper evaluates on 240 views (6 elevations x 40); the code's
+#   validation renders 5 elevations x 6. Cradle_Globe's shipped textures are 4096^2
+#   (metal/rough 2048^2); the official loader treats them as the HR ground truth and
+#   builds the 1024^2 LR input itself (pbr_sr/utils_online.py:402-477), so the texture
+#   metrics are against them. Open reading: Eq. 6 puts lambda_ssim inside L_pbr, so
+#   taken literally SSIM would get l_pbr x l_ssim = 100; the released code (and this
+#   preset) gives it 10.
+#
+# Then: bash variants/pbr_sr/server/status.sh RUN_NAME
+# Stop: docker stop pbrsr_RUN_NAME
+#
+# Every run gets its own copy of the bundled example: the official loader writes its
+# init caches (sr_kd_output_*.pt) next to the input, and they depend on the DiffBIR
+# config, so an official and a tiled run must not share an input folder. The path
+# keeps .../LR_mesh/Cgtrader/<mesh> because the official loader picks its branch by
+# that substring (pbr_sr/utils_online.py; otherwise it stops in pdb).
+set -euo pipefail
+export MSYS_NO_PATHCONV=1
+
+REPO=$(cd "$(dirname "$0")/../../.." && pwd)
+cd "$REPO"
+CONFIG=${2:-official}
+PRESET=${3:-paper}
+RUN=${1:-cradle_globe_$PRESET}
+NAME=pbrsr_$RUN
+case "$CONFIG" in
+  official) CFG_ENV=() ;;
+  tiled)    CFG_ENV=(-e PBR_SR_CONFIG_DIR=/workspace/variants/pbr_sr/configs_tiled) ;;
+  *) echo "config must be official or tiled, got: $CONFIG" >&2; exit 1 ;;
+esac
+case "$PRESET" in
+  paper)  N_ITER=${N_ITER:-2000}
+          EXTRA="--diffbir_steps 5 \
+ --matellic_weight_l1 0.1 --matellic_weight_interpolate_ssim 0.1 \
+ --n_weight_interpolate_ssim 1.0 \
+ --pbr_patch_consistency_weight 0" ;;
+  readme) N_ITER=${N_ITER:-10000}
+          EXTRA="--diffbir_steps 10" ;;
+  *) echo "preset must be paper or readme, got: $PRESET" >&2; exit 1 ;;
+esac
+if docker compose version >/dev/null 2>&1; then DC="docker compose"; else DC="docker-compose"; fi
+
+SRC=external/PBR-SR/data/LR_mesh/Cgtrader/Cradle_Globe
+DATA=runs/pbr_sr/$RUN/data/LR_mesh/Cgtrader/Cradle_Globe
+LOGS=runs/pbr_sr/logs
+W=/workspace
+
+if [ -n "$(docker ps -aq -f "name=^${NAME}$")" ]; then
+  if [ "$(docker inspect -f '{{.State.Running}}' "$NAME")" = true ]; then
+    echo "$NAME is already running: bash variants/pbr_sr/server/status.sh $RUN" >&2; exit 1
+  fi
+  [ "${DRY_RUN:-0}" = 1 ] || docker rm "$NAME" >/dev/null
+fi
+
+PY="python run_pbr_sr.py \
+ --data_dir '$W/$DATA' \
+ --out_dir '$W/runs/pbr_sr/$RUN/outputs' \
+ --n_iter $N_ITER \
+ --kd_init_method 'DiffBIR_x4' \
+ --ks_init_method 'CAMixer_HiT_SR_x4' \
+ --n_init_method 'US_bicubic' \
+ --pbr_sr_scale 4 \
+ --img_sr_model 'DiffBIR_x4' \
+ --render_cache_dir '$W/runs/pbr_sr/$RUN/cache_render' \
+ --robust_opti \
+ $EXTRA"
+L=$W/$LOGS/$RUN
+INNER="{ echo CONFIG=$CONFIG CONFIG_DIR=\${PBR_SR_CONFIG_DIR:-official configs/}; nvidia-smi -L; \
+ time $PY; } > $L.log 2>&1; echo \"EXIT \$?\" >> $L.log; date +%FT%T > $L.end"
+
+if [ "${DRY_RUN:-0}" = 1 ]; then
+  echo "(cd docker && $DC run -d -T --name $NAME ${CFG_ENV[*]} pbrsr bash -c \"$INNER\")"; exit 0
+fi
+
+mkdir -p "$(dirname "$DATA")" "$LOGS"
+[ -f "$DATA/mesh.obj" ] || cp -r "$SRC" "$(dirname "$DATA")/"
+[ -f "$LOGS/$RUN.log" ] && mv "$LOGS/$RUN.log" "$LOGS/$RUN.prev_$(date +%Y%m%d_%H%M%S).log"
+rm -f "$LOGS/$RUN.end"
+{ echo "start $(date +%FT%T) host=$(hostname) config=$CONFIG preset=$PRESET n_iter=$N_ITER"
+  echo "$PY"; } > "$LOGS/$RUN.start"
+
+( cd docker && $DC run -d -T --name "$NAME" ${CFG_ENV[@]+"${CFG_ENV[@]}"} pbrsr bash -c "$INNER" )
+
+# GPU sampler on the host, detached like the run; stops when the container stops.
+SETSID=$(command -v setsid || true)   # absent in Git Bash; Linux has it
+nohup $SETSID bash -c "
+  nvidia-smi --query-gpu=timestamp,memory.used,utilization.gpu,power.draw,temperature.gpu \
+    --format=csv,noheader -l 5 >> '$LOGS/${RUN}_gpu.csv' & s=\$!
+  while [ \"\$(docker inspect -f '{{.State.Running}}' '$NAME' 2>/dev/null)\" = true ]; do sleep 30; done
+  kill \$s" > /dev/null 2>&1 < /dev/null &
+
+echo "started $NAME  (config=$CONFIG, preset=$PRESET, n_iter=$N_ITER)"
+echo "status: bash variants/pbr_sr/server/status.sh $RUN"

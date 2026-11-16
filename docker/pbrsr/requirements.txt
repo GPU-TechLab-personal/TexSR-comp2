@@ -1,0 +1,63 @@
+# What texsr/pbrsr installs on top of pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel.
+# torch / torchvision / torchaudio come from the base image and are frozen there
+# (the Dockerfile writes them into a constraints file before any install).
+#
+# Source of the pins: external/PBR-SR/requirements.txt (@ f2faf0f), whose stack is
+# torch 2.2.2 / CUDA 11.8 - that does not run on the RTX 5080 (sm_120), so the torch
+# stack is the one deliberate change. Every other official pin is kept as written
+# unless a line below says why not.
+
+# NOT an official pin. opencv-python 4.8.1.78, basicsr 1.4.2 and facexlib are
+# built against the NumPy 1.x C ABI; torch 2.7 itself works with either.
+numpy==1.26.4
+
+# --- official pins, unchanged -------------------------------------------------
+ninja
+# nvdiffrast==0.3.3 is not on PyPI (the official requirements.txt cannot resolve it
+# either); it is installed from its GitHub tag in the Dockerfile.
+transformers==4.35.2
+accelerate==0.28.0
+einops==0.7.0
+opencv-python==4.8.1.78
+peft==0.13.0
+timm==0.9.16
+trimesh==4.7.1
+imageio==2.37.0
+lpips==0.1.4
+kornia==0.8.0
+facexlib==0.3.0
+omegaconf==2.3.0
+pyiqa==0.1.10
+albumentations==2.0.5
+huggingface-hub==0.25.0
+loguru==0.7.3
+markdown
+mpmath==1.3.0
+scipy==1.15.3
+taming-transformers
+tensorboard==2.16.2
+yapf==0.43.0
+# basicsr==1.4.2 is installed separately in the Dockerfile (its setup.py imports
+# torch, so it needs --no-build-isolation).
+# xformers==0.0.25.post1 is installed separately in the Dockerfile, at the build
+# made for this torch (the official one is built for torch 2.2.2 / cu118).
+# NOT installed: tinycudann (nothing on the run_pbr_sr / pbr_sr / nvdiff_render
+# path imports it, and it would need a from-source CUDA build), ruff (a linter).
+
+# --- imported by the official code but missing from its requirements ----------
+# run_pbr_sr.py:540 imports DISTS_pytorch at module level.
+DISTS-pytorch==0.1
+# run_pbr_sr.py:21, pbr_sr/utils.py, data_pipeline.py import these at module level
+# (in the official env they arrive transitively; pinned here so they cannot drift).
+torchmetrics==1.4.0
+pandas==2.2.3
+scikit-image==0.25.2
+matplotlib==3.10.0
+# Upstream DiffBIR (third_party/DiffBIR/requirements.txt @ 5c2d6c1): the vendored
+# open_clip tokenizer (ftfy, regex), the sampler (torchsde), result tables (polars)
+# and loading the SD checkpoint / seed_everything (pytorch-lightning).
+ftfy==6.2.0
+regex==2023.12.25
+torchsde==0.2.6
+polars==1.12.0
+pytorch-lightning==2.2.1

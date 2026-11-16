@@ -1,0 +1,114 @@
+TexSR-comp2 실행 명령어 모음 (연구실 PC: Windows + RTX 5090)
+=====================================================================
+명령은 전부 "Git Bash"에서, 레포 폴더(TexSR-comp2)에서 실행합니다.
+오래 걸리는 단계는 컨테이너로 따로 떠서 돌기 때문에 Git Bash 창이나 원격 데스크톱을 닫아도 계속 진행됩니다.
+
+
+[0] 한 번만 설치 (이미 있으면 건너뛰기)
+---------------------------------------------------------------------
+- NVIDIA 드라이버 570 이상  (확인: nvidia-smi)
+- Git for Windows           (Git Bash 포함)
+- Docker Desktop            (WSL2 백엔드, Settings > Resources > File sharing 에 D: 허용)
+- Python 3                  (MatSynth 다운로드용)
+
+# Docker 메모리 올리기 - PBR-SR가 RAM을 33 GB 넘게 씀 (기본값은 PC RAM의 절반)
+# C:\Users\<사용자>\.wslconfig 파일을 만들고 아래 두 줄 저장 (RAM 64 GB PC 기준 56GB)
+[wsl2]
+memory=56GB
+# 저장 후 PowerShell에서 실행하고 Docker Desktop 다시 시작
+wsl --shutdown
+
+
+[1] 코드 받기
+---------------------------------------------------------------------
+# 서브모듈(DeepTextures, esrgan-tf2, MatUp, PBR-SR)까지 같이 받음
+git clone --recursive https://github.com/GPU-TechLab-personal/TexSR-comp2.git
+cd TexSR-comp2
+
+# 데이터 위치 설정 (기본값 DAS_ROOT=D:/ -> D:\MatSynth\data\*.parquet)
+cp docker/.env.example docker/.env
+
+
+[2] MatSynth 다운로드 (약 866 GB, train 431 + test 8 파일)
+---------------------------------------------------------------------
+pip install -U huggingface_hub
+
+# 끊기면 같은 명령 다시 실행 -> 받은 파일은 건너뛰고 이어서 받음
+hf download gvecchio/MatSynth --repo-type dataset --local-dir D:/MatSynth
+
+# hf 명령이 없다고 나오면
+huggingface-cli download gvecchio/MatSynth --repo-type dataset --local-dir D:/MatSynth
+
+# 받은 개수 확인 (다 받으면 439)
+ls D:/MatSynth/data/*.parquet | wc -l
+
+
+[3] 환경 설치 (가중치 다운로드 + 이미지 4개 빌드 + GPU 확인, 처음 1시간 안팎)
+---------------------------------------------------------------------
+# 실패하거나 끊겨도 다시 실행하면 이어서 진행. 마지막 줄에 SETUP DONE 나오면 완료
+mkdir -p runs/logs && bash scripts/setup.sh 2>&1 | tee runs/logs/setup.log
+
+# 참고: DeepTextures(TF 2.10) 이미지는 5090용 커널을 처음 한 번 즉석 컴파일함 (7~10분 멈춘 것처럼 보임, 정상)
+
+
+[4] PBR-SR 기준 실험 - 공식 초기화, 논문 설정, 타일링 없음
+---------------------------------------------------------------------
+# MatSynth 다운로드 중에도 돌릴 수 있음. R1 학습과 GPU를 같이 쓰면 VRAM 부족 -> 한 번에 하나씩
+bash variants/pbr_sr/server/run_example.sh
+
+# 진행 상황 (컨테이너 상태, pseudo-GT 캐시 개수/예상 완료, 로그 끝, GPU/RAM)
+bash variants/pbr_sr/server/status.sh cradle_globe_paper
+
+# 로그 실시간 보기 (Ctrl+C는 보기만 종료)
+tail -f runs/pbr_sr/logs/cradle_globe_paper.log
+
+# 중지
+docker stop pbrsr_cradle_globe_paper
+
+# 실행될 명령만 출력
+DRY_RUN=1 bash variants/pbr_sr/server/run_example.sh
+
+
+[5] DeepTextures + render loss (R1) 학습 - MatSynth 다운로드 끝난 뒤
+---------------------------------------------------------------------
+# 5-1 평가용 재질 12개 추출 (학습에서 제외됨, 1~2분)
+bash scripts/r1.sh evalset
+
+# 5-2 학습 쌍 열화 방식이 평가와 픽셀 단위로 같은지 확인 ([PASS] 나와야 함)
+bash scripts/r1.sh check
+
+# 5-3 MatSynth -> 512/128 학습 쌍 (수 시간, 끊겨도 다시 실행하면 이어서)
+bash scripts/r1.sh pairs
+
+# 5-4 재질 단위 TFRecord 만들기 + 바이트 단위 검증
+bash scripts/r1.sh grouped
+
+# 5-5 200 step 시험 학습 (끝에 EXIT 0 확인 후 다음 단계)
+bash scripts/r1.sh smoke
+
+# 5-6 본 학습 40k step (끊기면 다시 실행 -> 마지막 체크포인트부터 이어서)
+bash scripts/r1.sh train
+
+# 진행 상황 (각 단계 상태, 로그 끝, 체크포인트, GPU)
+bash scripts/r1.sh status
+
+# 로그 실시간 보기
+tail -f runs/logs/r1_train.log
+
+# 중지 (pairs / grouped / smoke / train)
+bash scripts/r1.sh stop train
+
+
+[6] R1 / MatUp 결과로 PBR-SR 돌리기 - 준비 중
+---------------------------------------------------------------------
+# Cradle_Globe 1024 LR -> R1 / MatUp 4096 맵 -> PBR-SR 공식 read 초기화 형식 변환 스크립트를
+# 추가할 예정. 추가되면 git pull 후 이 칸의 명령 사용
+
+
+[결과 위치]
+---------------------------------------------------------------------
+runs/logs/                              R1 단계별 로그 (r1_<단계>.log, 끝에 EXIT 코드)
+runs/deeptex/datasets/                  학습 쌍, TFRecord
+runs/deeptex/render_r1/checkpoints/     R1 체크포인트 (마지막 3개: 30k/35k/40k)
+runs/pbr_sr/logs/                       PBR-SR 로그, GPU 기록(<RUN>_gpu.csv)
+runs/pbr_sr/<RUN>/outputs/              PBR-SR 결과 텍스처
