@@ -33,3 +33,18 @@ The PowerShell orchestrators (`run.ps1`, `lib.ps1`) are not carried over. `scrip
 - **The checkpoint keeper (`-KeepAllCheckpoints`):** upstream keeps the last 3 checkpoints. With `save_steps: 5000` those are 30k / 35k / 40k, which are the steps used before.
 - **The VRAM pre-check (`Assert-RenderVram`):** it targeted a 12 GB card.
 - **The failure classifier:** read the log's last lines instead (`bash scripts/r1.sh status`).
+
+## 5. Our SR maps as PBR-SR's init (`scripts/init.sh`, `variants/pbr_sr/init/`)
+
+- **Input = PBR-SR's own LR.** `export_lr.py` calls `load_mesh_data(data_dir, downsample_scale=4)`. That is the call `run_pbr_sr.py:708` makes, so both models see exactly the 1024^2 maps the official run super-resolves.
+- **AO = the official one.** It is HiT-SRF x4 on the LR ks, built and applied the way `run_pbr_sr.py:184-188, 1366` does it. Channel 0 is already 1 - AO, which is what `read` expects.
+- **8-bit `read` files.** `read` loads with `imageio.imread / 255` (`nvdiff_render/util.py:442`), so the three files must be 8-bit. The official inits stay float `.pt`. Our arms are therefore quantised to 8 bits, including the HiT AO channel they share with the official run.
+- **MatUp is run in tiles.** Its SwinIR-L step upsamples whole renders (`sr_swinir.py`: `tile = None`), which does not fit at 1024^2. So the work is split:
+  - 128^2 tiles (MatUp's `--material_size`), stride 112, on an 8 px reflect-padded LR.
+  - 16 HR px are cropped per side, to remove MatUp's 8 px zero border and its wrap-around bilinear init at the tile edge.
+  - Neighbours are blended over a 32 px linear ramp.
+  - 100 tiles, ~75 s each on an RTX 5080.
+- **MatUp inputs.**
+  - Height is a constant 0.5, which means no displacement: Cradle_Globe has no height map.
+  - Normals are read and written in MatUp's internal convention (no `--ogl_normals`), so the output keeps Cradle_Globe's own convention.
+- **R1 inputs.** The 8-bit LR maps go through `deeptex_sr.py`, tiled 256 LR px with 16 overlap. For a grey map, the mean of the three output channels is used.

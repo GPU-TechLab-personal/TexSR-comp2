@@ -23,6 +23,11 @@ peft==0.13.0
 timm==0.9.16
 trimesh==4.7.1
 imageio==2.37.0
+# ADDED: the mp4 writer. run_pbr_sr.py:2236-2237 saves the pseudo-GT cache as .mp4 via
+# imageio.mimsave (pbr_sr/utils.py:1485); without an ffmpeg plugin imageio falls back
+# to tifffile and the run dies right after the cache is written
+# (TypeError: TiffWriter.write() got an unexpected keyword argument 'fps', 2026-11-17).
+imageio-ffmpeg==0.6.0
 lpips==0.1.4
 kornia==0.8.0
 facexlib==0.3.0

@@ -14,6 +14,7 @@ Every command, in order, is in **[COMMANDS.txt](COMMANDS.txt)** (Git Bash on Win
 | `docker/` | one image per method (`dataprep`, `deeptex`, `matup`, `pbrsr`) |
 | `scripts/setup.sh` | weights, images and a GPU check per image |
 | `scripts/r1.sh` | R1: MatSynth pairs → grouped TFRecord → 40k-step training |
+| `scripts/init.sh` | Cradle_Globe: PBR-SR's LR maps → R1 / MatUp x4 → the three `read` init PNGs |
 | `variants/deeptex/` | the R1 trainer (hooks around upstream's loop) and data builders |
 | `variants/pbr_sr/server/` | PBR-SR runs (`run_example.sh`, `status.sh`) |
 | `runs/` | everything produced (gitignored) |

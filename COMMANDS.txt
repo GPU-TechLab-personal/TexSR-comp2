@@ -18,6 +18,14 @@ memory=56GB
 # 저장 후 PowerShell에서 실행하고 Docker Desktop 다시 시작
 wsl --shutdown
 
+# 자동 재부팅 막기 - Windows 업데이트 재부팅이 오면 Docker가 꺼지고 돌던 컨테이너가 전부 중단됨
+# (2026-11-17 테스트 PC에서 실제로 발생: MatUp 41/100 타일, PBR-SR 실행 중단)
+# 설정 > Windows 업데이트 > "업데이트 일시 중지" (최대 5주) 를 실험 기간 동안 켜 두기
+# Docker Desktop > Settings > General > "Start Docker Desktop when you sign in" 체크
+# 중단되면: Docker Desktop 켜고, 끊긴 단계를 같은 명령으로 다시 실행
+#   pairs / train / matup -> 이어서 진행
+#   PBR-SR -> pseudo-GT 캐시(.pt)가 다 저장됐으면 그 캐시를 읽고 최적화부터, 아니면 캐시 생성부터 다시
+
 
 [1] 코드 받기
 ---------------------------------------------------------------------
@@ -99,10 +107,32 @@ tail -f runs/logs/r1_train.log
 bash scripts/r1.sh stop train
 
 
-[6] R1 / MatUp 결과로 PBR-SR 돌리기 - 준비 중
+[6] R1 / MatUp 결과를 PBR-SR 초기값으로 넣어서 돌리기
 ---------------------------------------------------------------------
-# Cradle_Globe 1024 LR -> R1 / MatUp 4096 맵 -> PBR-SR 공식 read 초기화 형식 변환 스크립트를
-# 추가할 예정. 추가되면 git pull 후 이 칸의 명령 사용
+# 6-1 PBR-SR 코드가 직접 만드는 1024 LR 맵 + 공식 HiT AO(4096) 내보내기 (1분)
+bash scripts/init.sh export
+
+# 6-2 MatUp x4 - 128 타일 100개로 나눠 돌리고 이어 붙임 (1~2시간, 백그라운드, 끊기면 다시 실행하면 이어서)
+bash scripts/init.sh matup
+
+# 6-3 R1 x4 - R1 학습([5]) 끝난 뒤. 숫자는 쓸 체크포인트 step (30000 / 35000 / 40000, 기본 40000)
+bash scripts/init.sh r1 40000
+
+# 6-4 PBR-SR read 형식(sr_kd/ks/n_output.png, 4096 8-bit)으로 묶기. AO는 공식 HiT
+bash scripts/init.sh pack matup
+bash scripts/init.sh pack r1
+
+# 진행 상황 (만들어진 파일, MatUp 타일 진행)
+bash scripts/init.sh status
+
+# 6-5 PBR-SR 실행 - [4]와 같은 논문 설정, 초기값만 다름 (한 번에 하나씩)
+INIT=matup bash variants/pbr_sr/server/run_example.sh
+INIT=r1 bash variants/pbr_sr/server/run_example.sh
+
+# 진행 상황 / 로그 / 중지 (실행 이름: cradle_globe_paper_matup, cradle_globe_paper_r1)
+bash variants/pbr_sr/server/status.sh cradle_globe_paper_r1
+tail -f runs/pbr_sr/logs/cradle_globe_paper_r1.log
+docker stop pbrsr_cradle_globe_paper_r1
 
 
 [결과 위치]
@@ -110,5 +140,6 @@ bash scripts/r1.sh stop train
 runs/logs/                              R1 단계별 로그 (r1_<단계>.log, 끝에 EXIT 코드)
 runs/deeptex/datasets/                  학습 쌍, TFRecord
 runs/deeptex/render_r1/checkpoints/     R1 체크포인트 (마지막 3개: 30k/35k/40k)
+runs/pbr_sr/init/                       LR 맵(lr/), R1·MatUp 4096 맵(r1/, matup/), read 파일(read_r1/, read_matup/)
 runs/pbr_sr/logs/                       PBR-SR 로그, GPU 기록(<RUN>_gpu.csv)
 runs/pbr_sr/<RUN>/outputs/              PBR-SR 결과 텍스처
