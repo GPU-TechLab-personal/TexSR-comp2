@@ -14,7 +14,7 @@
 #     paper     the paper's stated settings (default) - see PRESET below
 #     readme    the README usage example as written (n_iter 10000, diffbir_steps 10)
 #   N_ITER=... overrides n_iter (e.g. a short test).  DRY_RUN=1 prints the command only.
-#   INIT=r1|matup  start from our SR maps instead of the official init: the three
+#   INIT=r1|matup|matup_ft  start from our SR maps instead of the official init: the three
 #               files of runs/pbr_sr/init/read_<INIT>/ (scripts/init.sh) are put in
 #               the run's data dir and --kd/ks/n_init_method are 'read'. Everything
 #               else (pseudo-GT, preset, losses) is unchanged. Default RUN_NAME gets
@@ -82,12 +82,12 @@ case "$PRESET" in
 esac
 case "$INIT" in
   "")        INIT_ARGS="--kd_init_method 'DiffBIR_x4' --ks_init_method 'CAMixer_HiT_SR_x4' --n_init_method 'US_bicubic'" ;;
-  r1|matup)  INIT_DIR=runs/pbr_sr/init/read_$INIT
+  r1|matup|matup_ft)  INIT_DIR=runs/pbr_sr/init/read_$INIT
              for f in sr_kd_output.png sr_ks_output.png sr_n_output.png; do
                [ -f "$INIT_DIR/$f" ] || { echo "missing $INIT_DIR/$f - run: bash scripts/init.sh pack $INIT" >&2; exit 1; }
              done
              INIT_ARGS="--kd_init_method 'read' --ks_init_method 'read' --n_init_method 'read'" ;;
-  *) echo "INIT must be r1 or matup (or unset), got: $INIT" >&2; exit 1 ;;
+  *) echo "INIT must be r1, matup or matup_ft (or unset), got: $INIT" >&2; exit 1 ;;
 esac
 [ "${VIEWS_TEST:-0}" = 1 ] && EXTRA="$EXTRA --train_elev_index 1"
 if docker compose version >/dev/null 2>&1; then DC="docker compose"; else DC="docker-compose"; fi

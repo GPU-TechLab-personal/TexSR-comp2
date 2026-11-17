@@ -48,3 +48,21 @@ The PowerShell orchestrators (`run.ps1`, `lib.ps1`) are not carried over. `scrip
   - Height is a constant 0.5, which means no displacement: Cradle_Globe has no height map.
   - Normals are read and written in MatUp's internal convention (no `--ogl_normals`), so the output keeps Cradle_Globe's own convention.
 - **R1 inputs.** The 8-bit LR maps go through `deeptex_sr.py`, tiled 256 LR px with 16 overlap. For a grey map, the mean of the three output channels is used.
+
+## 6. MatUp fine-tuned on MatSynth (`scripts/matup_ft.sh`, `variants/matup_ft/`)
+
+- **What is tuned.** MatUp has no trained weights of its own. It optimises each material, and its only network is the SwinIR-L x4 GAN that upscales the material's renderings (`sr_swinir.py`). That network is what gets fine-tuned. Its architecture is fixed in MatUp's code (`task real_sr`, `--large_model`), so the fine-tune keeps it exactly.
+- **Recipe = TexSR-comp1's better SwinIR arm, `swinir_cls_ft`.** In comp1 (`runs/montages/sr_finetune/summary.md`), it was the best SwinIR arm on map PSNR / SSIM / normal angle for all five maps, and on render FLIP. That recipe is:
+  - KAIR's official classical trainer (`main_train_psnr.py`, L1, EMA 0.999);
+  - fixed area pairs, H patch 256;
+  - batch 4, Adam 1e-4, MultiStepLR [20k, 30k] x 0.5;
+  - 40k iterations, seed 0.
+  `variants/matup_ft/swinirL_ft.json` is comp1's `swinir_cls_ft.json` with only the network (SwinIR-L real, as MatUp builds it) and the starting weights changed.
+- **Starting weights:** MatUp's own `003_realSR_BSRGAN_DFOWMFC_s64w8_SwinIR-L_x4_GAN.pth` (`params_ema`), so step 0 is MatUp as released.
+- **Data:** the MatSynth pairs R1 trains on (`scripts/r1.sh pairs`), five maps 1:1, read in place. KAIR's option parser only takes a string for `dataroot_*`, so `train.py` wraps `utils_option.parse` to pass the five folders. KAIR itself is not edited.
+- **Data domain:** like comp1, the network is tuned on maps, while MatUp applies it to renderings.
+- **Image:** the `matup` image (torch 2.7.1) runs KAIR. comp1 ran it on torch 2.0.0, which has no sm_120 kernels.
+- **Use in MatUp:** `init.sh matup_ft` bind-mounts `<step>_E.pth` over the released file inside that container only. Neither MatUp's code nor the file on disk changes.
+  - Checked on an RTX 5080: a 20-step run saved `10_E` and `20_E`.
+  - Inside the container, MatUp's path had `20_E`'s sha256, and `define_model` loaded it with `strict=True` (28.0M parameters).
+  - MatUp then ran its example (`victorian_wood`) to the end.

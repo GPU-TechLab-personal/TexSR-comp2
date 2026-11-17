@@ -23,7 +23,8 @@ Channels:
 The arms' maps:
   r1     runs/pbr_sr/init/r1/*.png, 8-bit 3-channel (DeepTextures writes RGB even
          for a grey input). Grey maps use the mean of the three channels.
-  matup  runs/pbr_sr/init/matup/*.png, 16-bit, blended by matup_tiles.py.
+  matup     runs/pbr_sr/init/matup/*.png, 16-bit, blended by matup_tiles.py.
+  matup_ft  runs/pbr_sr/init/matup_ft/*.png, the same with the fine-tuned SwinIR-L.
 
 Written to runs/pbr_sr/init/read_<arm>/: sr_kd_output.png, sr_ks_output.png,
 sr_n_output.png, meta.json.
@@ -37,7 +38,8 @@ import numpy as np
 
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), *[os.pardir] * 3))
 INIT = os.path.join(REPO, "runs", "pbr_sr", "init")
-SRC = {"r1": os.path.join(INIT, "r1"), "matup": os.path.join(INIT, "matup")}
+SRC = {"r1": os.path.join(INIT, "r1"), "matup": os.path.join(INIT, "matup"),
+       "matup_ft": os.path.join(INIT, "matup_ft")}
 
 
 def read(path, grey=False):

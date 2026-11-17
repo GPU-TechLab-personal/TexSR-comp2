@@ -1,0 +1,98 @@
+// MatUp's upsampler, SwinIR-L real-world x4 (the network MatUp runs on every rendering),
+// fine-tuned on MatSynth with TexSR-comp1's better SwinIR recipe, swinir_cls_ft:
+//   - comp1 runs/montages/sr_finetune/summary.md: best map PSNR / SSIM / normal angle on all
+//     five maps among the SwinIR arms, and best render FLIP;
+//   - fixed area pairs, L1, KAIR "plain".
+// That recipe is external/KAIR/options/swinir/train_swinir_sr_classical.json (KAIR @ fc1732f)
+// with comp1's changes kept. What differs from comp1's swinir_cls_ft.json is marked MATUP:
+// the network (and the weights it starts from) are MatUp's SwinIR-L.
+//
+// KAIR strips everything after "//" on each line (utils/utils_option.py), so these comments
+// are legal; no value may contain "//". Trained by variants/matup_ft/train.py
+// (scripts/matup_ft.sh train). Models land in runs/matup_ft/kair/swinirL_ft/models/<N>_{G,E}.pth.
+// E (the EMA weights) is what MatUp uses.
+{
+  "task": "swinirL_ft"                   // MATUP (comp1: swinir_cls_ft)
+  , "model": "plain"
+  , "gpu_ids": [0]
+  , "dist": false
+
+  , "scale": 4
+  , "n_channels": 3
+
+  , "path": {
+    "root": "/workspace/runs/matup_ft/kair"
+    // Ignored by KAIR, as in comp1: the run starts from models/0_G.pth + 0_E.pth, which
+    // train.py writes from MatUp's own 003_realSR_BSRGAN_DFOWMFC_s64w8_SwinIR-L_x4_GAN.pth
+    // (params_ema, the only generator released).
+    , "pretrained_netG": null
+    , "pretrained_netE": null
+  }
+
+  , "datasets": {
+    "train": {
+      "name": "train_dataset"
+      , "dataset_type": "sr"
+      // The MatSynth pairs R1 trains on (scripts/r1.sh pairs): five maps, one HR/LRx4 folder
+      // pair each, area LR. KAIR's parser only takes a string here; train.py replaces these
+      // two with the five folders of each side (--pairs), in the same order, so a batch mixes
+      // the five maps 1:1 as comp1's flat folder did.
+      , "dataroot_H": "SET_BY_TRAIN_PY"
+      , "dataroot_L": "SET_BY_TRAIN_PY"
+
+      , "H_size": 256                    // LR patch 64, the s64 the released model was trained at
+
+      , "dataloader_shuffle": true
+      , "dataloader_num_workers": 8
+      , "dataloader_batch_size": 4       // comp1's per-GPU 4 (the official per-GPU value)
+    }
+  }
+
+  , "netG": {                            // MATUP: SwinIR-L real x4, exactly as MatUp builds it
+    "net_type": "swinir"                 // (sr_modules/SwinIR/main_test_swinir.py, task real_sr,
+    , "upscale": 4                       //  --large_model)
+    , "in_chans": 3
+    , "img_size": 64
+    , "window_size": 8
+    , "img_range": 1.0
+    , "depths": [6, 6, 6, 6, 6, 6, 6, 6, 6]
+    , "embed_dim": 240
+    , "num_heads": [8, 8, 8, 8, 8, 8, 8, 8, 8]
+    , "mlp_ratio": 2
+    , "upsampler": "nearest+conv"
+    , "resi_connection": "3conv"
+
+    , "init_type": "default"
+  }
+
+  , "train": {
+    "G_lossfn_type": "l1"
+    , "G_lossfn_weight": 1.0
+
+    , "E_decay": 0.999
+
+    , "G_optimizer_type": "adam"
+    , "G_optimizer_lr": 1e-4
+    , "G_optimizer_wd": 0
+    , "G_optimizer_clipgrad": null
+    , "G_optimizer_reuse": true
+
+    , "G_scheduler_type": "MultiStepLR"
+    , "G_scheduler_milestones": [20000, 30000]
+    , "G_scheduler_gamma": 0.5
+
+    , "G_regularizer_orthstep": null
+    , "G_regularizer_clipstep": null
+
+    , "G_param_strict": true
+    , "E_param_strict": true
+
+    , "manual_seed": 0
+
+    // No test set: the loop reads test_loader at every checkpoint_test step, so it must
+    // never be reached (comp1).
+    , "checkpoint_test": 1000000000
+    , "checkpoint_save": 5000
+    , "checkpoint_print": 200
+  }
+}

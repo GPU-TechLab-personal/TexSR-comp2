@@ -107,6 +107,20 @@ tail -f runs/logs/r1_train.log
 bash scripts/r1.sh stop train
 
 
+[5b] MatUp 파인튜닝 - MatUp 안의 SwinIR-L x4를 MatSynth로 (comp1에서 더 나았던 swinir_cls_ft 레시피)
+---------------------------------------------------------------------
+# [5]의 5-3 pairs가 끝나 있어야 함 (R1과 같은 학습 쌍 사용, 복사 없음). R1 학습과 GPU 같이 쓰면 안 됨
+# 20 step 시험 (1분 안팎, 끝에 EXIT 0 확인)
+bash scripts/matup_ft.sh smoke
+
+# 본 학습 40k step (5090에서 수 시간, 백그라운드, 끊기면 다시 실행 -> 마지막 저장 step부터 이어서)
+bash scripts/matup_ft.sh train
+
+# 진행 상황 (상태, 로그 끝, 저장된 step, GPU) / 중지
+bash scripts/matup_ft.sh status
+bash scripts/matup_ft.sh stop
+
+
 [6] R1 / MatUp 결과를 PBR-SR 초기값으로 넣어서 돌리기
 ---------------------------------------------------------------------
 # 6-1 PBR-SR 코드가 직접 만드는 1024 LR 맵 + 공식 HiT AO(4096) 내보내기 (1분)
@@ -118,8 +132,12 @@ bash scripts/init.sh matup
 # 6-3 R1 x4 - R1 학습([5]) 끝난 뒤. 숫자는 쓸 체크포인트 step (30000 / 35000 / 40000, 기본 40000)
 bash scripts/init.sh r1 40000
 
+# 6-3b 파인튜닝한 MatUp x4 - [5b] 끝난 뒤. 숫자는 쓸 step (기본 40000). 6-2와 동시에 돌리지 말 것
+bash scripts/init.sh matup_ft 40000
+
 # 6-4 PBR-SR read 형식(sr_kd/ks/n_output.png, 4096 8-bit)으로 묶기. AO는 공식 HiT
 bash scripts/init.sh pack matup
+bash scripts/init.sh pack matup_ft
 bash scripts/init.sh pack r1
 
 # 진행 상황 (만들어진 파일, MatUp 타일 진행)
@@ -127,9 +145,10 @@ bash scripts/init.sh status
 
 # 6-5 PBR-SR 실행 - [4]와 같은 논문 설정, 초기값만 다름 (한 번에 하나씩)
 INIT=matup bash variants/pbr_sr/server/run_example.sh
+INIT=matup_ft bash variants/pbr_sr/server/run_example.sh
 INIT=r1 bash variants/pbr_sr/server/run_example.sh
 
-# 진행 상황 / 로그 / 중지 (실행 이름: cradle_globe_paper_matup, cradle_globe_paper_r1)
+# 진행 상황 / 로그 / 중지 (실행 이름: cradle_globe_paper_matup, _matup_ft, _r1)
 bash variants/pbr_sr/server/status.sh cradle_globe_paper_r1
 tail -f runs/pbr_sr/logs/cradle_globe_paper_r1.log
 docker stop pbrsr_cradle_globe_paper_r1
@@ -140,6 +159,7 @@ docker stop pbrsr_cradle_globe_paper_r1
 runs/logs/                              R1 단계별 로그 (r1_<단계>.log, 끝에 EXIT 코드)
 runs/deeptex/datasets/                  학습 쌍, TFRecord
 runs/deeptex/render_r1/checkpoints/     R1 체크포인트 (마지막 3개: 30k/35k/40k)
-runs/pbr_sr/init/                       LR 맵(lr/), R1·MatUp 4096 맵(r1/, matup/), read 파일(read_r1/, read_matup/)
+runs/matup_ft/kair/swinirL_ft/models/   MatUp용 SwinIR-L 파인튜닝 가중치 (<step>_E.pth, 5k마다)
+runs/pbr_sr/init/                       LR 맵(lr/), 4096 맵(r1/, matup/, matup_ft/), read 파일(read_<arm>/)
 runs/pbr_sr/logs/                       PBR-SR 로그, GPU 기록(<RUN>_gpu.csv)
 runs/pbr_sr/<RUN>/outputs/              PBR-SR 결과 텍스처

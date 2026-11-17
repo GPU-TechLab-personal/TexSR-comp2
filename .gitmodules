@@ -10,3 +10,6 @@
 [submodule "external/PBR-SR"]
 	path = external/PBR-SR
 	url = https://github.com/TerenceCYJ/PBR-SR.git
+[submodule "external/KAIR"]
+	path = external/KAIR
+	url = https://github.com/cszn/KAIR.git
