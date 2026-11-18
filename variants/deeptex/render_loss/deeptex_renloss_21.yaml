@@ -1,4 +1,4 @@
-# Render-loss experiment, arm R1: paper losses + w_render x MatUp render loss, seed 1.
+# Render-loss experiment, arm deeptex_renloss_21: paper losses + w_render x MatUp render loss, seed 1.
 #
 # Same recipe as esrgan_matsynth.yaml (the paper's losses, schedule and loss
 # weights on MatSynth), trained by scripts/deeptex/deeptex_train.py in grouped
@@ -7,8 +7,8 @@
 # maps = 10 images. On top of pixel/feature/gan, the five SR maps of each
 # material are decoded as an SVBRDF and rendered under MatUp's 100 training
 # lights, and w_render x l2,1(render(SR), render(GT HR)) is added to the G loss.
-# R1 is R0a with w_render changed and nothing else: same seed 1, so the same G/D
-# init and crop sequence, and R1 - R0a is the effect of the render term.
+# deeptex_renloss_21 is R0a with w_render changed and nothing else: same seed 1, so the same G/D
+# init and crop sequence, and deeptex_renloss_21 - R0a is the effect of the render term.
 #
 # w_render shipped as null ON PURPOSE (deeptex_train.py exits 8 on null) and was
 # filled on 2026-10-07 from the calibration gate. run_deeptex.ps1 -Stage
@@ -17,8 +17,8 @@
 # EXACT DIFF against variants/deeptex/matsynth/esrgan_matsynth.yaml, and only these:
 #   batch_size             8 -> 2 (materials; 10 images per step)
 #   seed                   added, 1
-#   checkpoint_root        added, '/workspace/runs/deeptex/render_r1/checkpoints'
-#   log_root               added, '/workspace/runs/deeptex/render_r1/logs'
+#   checkpoint_root        added, '/workspace/runs/deeptex/deeptex_renloss_21/checkpoints'
+#   log_root               added, '/workspace/runs/deeptex/deeptex_renloss_21/logs'
 #   train_dataset.path     .../matsynth/matsynth_all_lrx4.tfrecord ->
 #                          .../matsynth_grouped/matsynth_grouped_lrx4.tfrecord
 #   train_dataset.grouped  added, True
@@ -28,10 +28,10 @@
 # deeptex_train.py reads pretrain_dir, and the stage passes --pretrain-dir none.
 # Check it (comments stripped, so only the values above remain):
 #   diff <(sed 's/[[:space:]]*#.*//' variants/deeptex/matsynth/esrgan_matsynth.yaml | grep -v '^$') \
-#        <(sed 's/[[:space:]]*#.*//' variants/deeptex/render_loss/r1.yaml | grep -v '^$')
+#        <(sed 's/[[:space:]]*#.*//' variants/deeptex/render_loss/deeptex_renloss_21.yaml | grep -v '^$')
 #
 # Run:
-#   scripts\deeptex\run_deeptex.ps1 -Stage render-train -Arm r1 -KeepAllCheckpoints
+#   scripts\deeptex\run_deeptex.ps1 -Stage render-train -Arm r1 -KeepAllCheckpoints   (comp1; there this arm was R1)
 # which runs deeptex_train.py --stage esrgan --losses upstream --shuffle off
 #   --allow-dead-lr-schedule --pretrain-dir none --no-val --log-every 100
 #   --render-monitor-every 100
@@ -49,12 +49,12 @@ sub_name: 'esrgan_40k'
 pretrain_name: './checkpoints/'
 
 # ADDED: tf.keras.utils.set_random_seed before the model build (G/D init) and keys the
-# stateless crop/flip/rot draws. R0a and R1 share 1; R0b uses 2.
+# stateless crop/flip/rot draws. R0a and deeptex_renloss_21 share 1; R0b uses 2.
 seed: 1
 
 # ADDED: this arm's own roots; checkpoints land in <checkpoint_root>/<sub_name>.
-checkpoint_root: '/workspace/runs/deeptex/render_r1/checkpoints'
-log_root: '/workspace/runs/deeptex/render_r1/logs'
+checkpoint_root: '/workspace/runs/deeptex/deeptex_renloss_21/checkpoints'
+log_root: '/workspace/runs/deeptex/deeptex_renloss_21/logs'
 
 # generator setting
 network_G:

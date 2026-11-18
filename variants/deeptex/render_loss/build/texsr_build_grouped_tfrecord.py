@@ -37,7 +37,7 @@ does for missing partners.
 
 ORDER. The names are sorted, then shuffled with random.Random(seed), as in
 texsr_build_tfrecord.py:142-143. The render arms train with --shuffle off, so this
-order IS the curriculum, and R0a, R0b and R1 all read it the same way. --limit N
+order IS the curriculum, and R0a, R0b and deeptex_renloss_21 all read it the same way. --limit N
 keeps only the first N names of that order, which gives a prefix of the full
 curriculum for quick tests. texsr_verify_grouped.py never passes such a record:
 the best it can get is PARTIAL, and deeptex_train.py refuses that.

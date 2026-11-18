@@ -14,7 +14,7 @@
 #     paper     the paper's stated settings (default) - see PRESET below
 #     readme    the README usage example as written (n_iter 10000, diffbir_steps 10)
 #   N_ITER=... overrides n_iter (e.g. a short test).  DRY_RUN=1 prints the command only.
-#   INIT=r1|matup|matup_ft  start from our SR maps instead of the official init: the three
+#   INIT=deeptex_renloss_21|matup|matup_ft  start from our SR maps instead of the official init: the three
 #               files of runs/pbr_sr/init/read_<INIT>/ (scripts/init.sh) are put in
 #               the run's data dir and --kd/ks/n_init_method are 'read'. Everything
 #               else (pseudo-GT, preset, losses) is unchanged. Default RUN_NAME gets
@@ -27,26 +27,39 @@
 #   paper                                   code default   set here
 #   2000 iterations                         n_iter 10000   --n_iter 2000
 #   DiffBIR denoising steps "five"          10             --diffbir_steps 5
+#   init (Sec. 3.2): albedo by the SR       ks: CAMixer +  --ks_init_method 'US_bicubic'
+#     model (DiffBIR), ARM and normal by    HiT-SRF x4     (kd DiffBIR_x4 and n US_bicubic
+#     bicubic interpolation                                are already the defaults)
 #   PBR consistency w_Km (metallic) 0.1     1.0 (l1, ssim) --matellic_weight_l1 0.1
 #                                                          --matellic_weight_interpolate_ssim 0.1
-#   SSIM part lambda_ssim = 10 "for all",   normal x10     --n_weight_interpolate_ssim 1.0
-#     w_Kn = 1.0                            (100 vs 10)    (pbr_interpolate_ssim_weight 10 kept)
+#   SSIM term, Eq. 6 inside l_pbr L_pbr:    10 (normal     --pbr_interpolate_ssim_weight 100
+#     l_pbr x w_T x lambda_ssim             x10 = 100)     --n_weight_interpolate_ssim 1.0
+#     = 10 x 1 x 10 = 100 (w_Km: 10)                       (decided 2026-11-18: Eq. 6 as
+#                                                          written; the released code gives 10)
+#   L_pbr sums T in {Kd, Kr, Km, Kn}:       AO l1 1.0,     --occlusion_weight_l1 0
+#     no AO term                            AO ssim 1.0    --occlusion_weight_interpolate_ssim 0
 #   L_total = L_robust + l_pbr L_pbr        patch-consist. --pbr_patch_consistency_weight 0
 #             + l_tv L_tv (no other term)   on, w 1.0      (store_true default True: only
 #                                                          its weight can switch it off)
-#   already equal: Adam lr 1e-4 constant (StepLR step 10000 never fires in 2000 its),
-#   batch 4 views, 750 views = 15 elevations x 50, FoV 10, camera distance 3.25,
-#   pseudo-GT 1024^2 (render_res 512 x cam_big_upscale 2), robust lambda_pix 100 /
-#   lambda_reg 0.5, weight map 64^2, l_pbr 10 (pbr_loss_weight_l1), l_ssim 10
-#   (pbr_interpolate_ssim_weight), l_tv 0.5, w_Kd = w_Kr = 1.0.
-#   NOT matched: the paper evaluates on 240 views (6 elevations x 40); the code's
-#   validation renders 5 elevations x 6. Cradle_Globe's shipped textures are 4096^2
-#   (metal/rough 2048^2); the official loader treats them as the HR ground truth and
-#   builds the 1024^2 LR input itself (pbr_sr/utils_online.py:402-477), so the texture
-#   metrics are against them. Open reading: Eq. 6 puts lambda_ssim inside L_pbr, so
-#   taken literally SSIM would get l_pbr x l_ssim = 100; the released code (and this
-#   preset) gives it 10.
+#   already equal: 
+#       Adam lr 1e-4 constant (StepLR step 10000 never fires in 2000 its),
+#       batch 4 views, 750 views = 15 elevations x 50, FoV 10, camera distance 3.25,
+#       pseudo-GT 1024^2 (render_res 512 x cam_big_upscale 2), robust lambda_pix 100 / lambda_reg 0.5, 
+#       weight map 64^2, l_pbr 10 (pbr_loss_weight_l1), l_tv 0.5, w_Kd = w_Kr = 1.0.
 #
+#   NOT matched (no argument for them; the official code is not edited):
+#       - evaluation views: the paper evaluates on 240 views (6 elevations x 40; angles, FoV
+#         and distance not stated). The code renders two fixed sets of 5 elevations x 20 =
+#         100 views each, 512^2 at distance 3.25, FoV 5 (set1) and FoV 10 (set2)
+#         (run_pbr_sr.py:759-773; --circle_n_view_val is not used and --val_elev is
+#         type=list, so neither changes them from the command line).
+#       - Pool in the SSIM term: Eq. 6 average-pools T_theta for both L1 and SSIM; the code
+#         average-pools for L1 but resizes bicubically for SSIM (run_pbr_sr.py:4245-4275).
+#         Cradle_Globe's shipped textures are 4096^2
+#         (metal/rough 2048^2); the official loader treats them as the HR ground truth and
+#         builds the 1024^2 LR input itself (pbr_sr/utils_online.py:402-477), so the texture
+#         metrics are against them.
+#     
 # Then: bash variants/pbr_sr/server/status.sh RUN_NAME
 # Stop: docker stop pbrsr_RUN_NAME
 #
@@ -72,22 +85,25 @@ case "$CONFIG" in
 esac
 case "$PRESET" in
   paper)  N_ITER=${N_ITER:-2000}
+          KS_INIT=US_bicubic
           EXTRA="--diffbir_steps 5 \
  --matellic_weight_l1 0.1 --matellic_weight_interpolate_ssim 0.1 \
- --n_weight_interpolate_ssim 1.0 \
+ --pbr_interpolate_ssim_weight 100 --n_weight_interpolate_ssim 1.0 \
+ --occlusion_weight_l1 0 --occlusion_weight_interpolate_ssim 0 \
  --pbr_patch_consistency_weight 0" ;;
   readme) N_ITER=${N_ITER:-10000}
+          KS_INIT=CAMixer_HiT_SR_x4
           EXTRA="--diffbir_steps 10" ;;
   *) echo "preset must be paper or readme, got: $PRESET" >&2; exit 1 ;;
 esac
 case "$INIT" in
-  "")        INIT_ARGS="--kd_init_method 'DiffBIR_x4' --ks_init_method 'CAMixer_HiT_SR_x4' --n_init_method 'US_bicubic'" ;;
-  r1|matup|matup_ft)  INIT_DIR=runs/pbr_sr/init/read_$INIT
+  "")        INIT_ARGS="--kd_init_method 'DiffBIR_x4' --ks_init_method '$KS_INIT' --n_init_method 'US_bicubic'" ;;
+  deeptex_renloss_21|matup|matup_ft)  INIT_DIR=runs/pbr_sr/init/read_$INIT
              for f in sr_kd_output.png sr_ks_output.png sr_n_output.png; do
                [ -f "$INIT_DIR/$f" ] || { echo "missing $INIT_DIR/$f - run: bash scripts/init.sh pack $INIT" >&2; exit 1; }
              done
              INIT_ARGS="--kd_init_method 'read' --ks_init_method 'read' --n_init_method 'read'" ;;
-  *) echo "INIT must be r1, matup or matup_ft (or unset), got: $INIT" >&2; exit 1 ;;
+  *) echo "INIT must be deeptex_renloss_21, matup or matup_ft (or unset), got: $INIT" >&2; exit 1 ;;
 esac
 [ "${VIEWS_TEST:-0}" = 1 ] && EXTRA="$EXTRA --train_elev_index 1"
 if docker compose version >/dev/null 2>&1; then DC="docker compose"; else DC="docker-compose"; fi

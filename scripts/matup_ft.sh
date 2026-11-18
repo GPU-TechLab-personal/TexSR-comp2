@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # MatUp's SwinIR-L x4 fine-tuned on MatSynth (comp1's better SwinIR recipe: fixed area
-# pairs, L1, KAIR's official trainer). Uses the pairs of scripts/r1.sh pairs.
+# pairs, L1, KAIR's official trainer). Uses the shared pairs of scripts/data.sh pairs.
 # Run from the repo root in Git Bash:
 #
 #   bash scripts/matup_ft.sh train       40k steps -> runs/matup_ft/kair/swinirL_ft/models/<N>_E.pth
@@ -35,10 +35,10 @@ detached() {  # name, command
 
 case "${1:-}" in
   train)
-    [ -d runs/deeptex/datasets/matsynth/_meta ] || { echo "no MatSynth pairs - run: bash scripts/r1.sh pairs" >&2; exit 1; }
+    [ -f runs/datasets/matsynth/pairs_manifest.json ] || { echo "no MatSynth pairs - run: bash scripts/data.sh pairs (and let it finish)" >&2; exit 1; }
     detached matup_ft "python $W/variants/matup_ft/train.py" ;;
   smoke)
-    [ -d runs/deeptex/datasets/matsynth/_meta ] || { echo "no MatSynth pairs - run: bash scripts/r1.sh pairs" >&2; exit 1; }
+    [ -f runs/datasets/matsynth/pairs_manifest.json ] || { echo "no MatSynth pairs - run: bash scripts/data.sh pairs (and let it finish)" >&2; exit 1; }
     detached matup_ft_smoke "python $W/variants/matup_ft/train.py --total-iter 20 \
  --set train.checkpoint_save=10 --set train.checkpoint_print=5 --set path.root=$W/runs/matup_ft_smoke/kair" ;;
   stop)

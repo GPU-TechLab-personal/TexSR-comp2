@@ -64,7 +64,7 @@ def apply_set(opt, items):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--opt", default=os.path.join(REPO, "variants", "matup_ft", "swinirL_ft.json"))
-    ap.add_argument("--pairs", default="/workspace/runs/deeptex/datasets/matsynth",
+    ap.add_argument("--pairs", default="/workspace/runs/datasets/matsynth",
                     help="matsynth_make_pairs.py output: <pairs>/<map>/{HR,LRx4}/")
     ap.add_argument("--total-iter", type=int, default=40000)
     ap.add_argument("--set", action="append", default=[], metavar="KEY=JSON")
@@ -87,7 +87,7 @@ def main():
         nh = sorted(os.path.basename(p) for p in glob.glob(os.path.join(h, "*.png")))
         nl = sorted(os.path.basename(p) for p in glob.glob(os.path.join(l, "*.png")))
         if not nh or nh != nl:
-            raise SystemExit("[fatal] %s: HR %d / LRx4 %d files, names %s - run scripts/r1.sh pairs"
+            raise SystemExit("[fatal] %s: HR %d / LRx4 %d files, names %s - run scripts/data.sh pairs"
                              % (m, len(nh), len(nl), "match" if nh == nl else "DIFFER"))
         counts[m] = len(nh)
     print("[matup_ft] pairs per map: %s (total %d)" % (counts, sum(counts.values())), flush=True)

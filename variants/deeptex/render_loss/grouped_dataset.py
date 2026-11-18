@@ -33,7 +33,7 @@ WHAT IS DIFFERENT, and why:
   * Randomness is STATELESS, keyed on (seed, global sample index) via
     Dataset.enumerate(). Upstream uses stateful tf.random.uniform inside an
     AUTOTUNE map, whose assignment of draws to elements is not reproducible.
-    Here R0 and R1 with the same seed see the identical crop sequence, and a
+    Here R0 and deeptex_renloss_21 with the same seed see the identical crop sequence, and a
     resumed run sees the crops the uninterrupted run would have seen.
   * Resume skips the records already consumed (start_index) instead of
     restarting at record 0 (docs/DEEPTEX-DEVIATIONS.md:763-766 records the

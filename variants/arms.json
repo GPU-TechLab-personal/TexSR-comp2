@@ -2,7 +2,7 @@
   "_doc": [
     "Every SR arm the evaluators and orchestrators know: what method it is, how it is shown, what it is compared with, and where its config and checkpoints are.",
     "Read by variants/util/arms.py (Python) and Get-ArmInfo / Get-DisplayName in variants/util/lib.ps1 (PowerShell, ConvertFrom-Json).",
-    "A tag may carry a step suffix (render_r1_40k): the entry of its base tag applies and the step is appended to the display name.",
+    "A tag may carry a step suffix (deeptex_renloss_21_40k): the entry of its base tag applies and the step is appended to the display name.",
     "methods.<m>: display = the method name in sheets; key_prefix = the column key prefix in reports (dt_ for DeepTextures: existing report keys);",
     "  checkpoint = tf | torch | none (how a step is found: tf = <prefix>.index files).",
     "arms.<tag>: method, display (row name), reference (the arm it is compared against; null = none),",
@@ -33,12 +33,12 @@
                            "config": "variants/deeptex/render_loss/r0a.yaml", "checkpoint_root": "from_config"},
     "render_r0b":         {"method": "deeptex", "display": "DeepTextures grouped (R0b)", "reference": "matsynth_all",
                            "config": "variants/deeptex/render_loss/r0b.yaml", "checkpoint_root": "from_config"},
-    "render_r1":          {"method": "deeptex", "display": "DeepTextures + render loss (R1)", "reference": "matsynth_all",
-                           "config": "variants/deeptex/render_loss/r1.yaml", "checkpoint_root": "from_config"},
+    "deeptex_renloss_21":          {"method": "deeptex", "display": "DeepTextures + render loss (deeptex_renloss_21)", "reference": "matsynth_all",
+                           "config": "variants/deeptex/render_loss/deeptex_renloss_21.yaml", "checkpoint_root": "from_config"},
     "smoke_r0a":          {"method": "deeptex", "display": "smoke_r0a", "reference": null,
                            "config": "variants/deeptex/render_loss/r0a.yaml", "checkpoint_root": "{RSMOKE}/smoke_r0a/checkpoints"},
-    "smoke_r1":           {"method": "deeptex", "display": "smoke_r1", "reference": null,
-                           "config": "variants/deeptex/render_loss/r1.yaml", "checkpoint_root": "{RSMOKE}/smoke_r1/checkpoints"},
+    "smoke_deeptex_renloss_21":           {"method": "deeptex", "display": "smoke_deeptex_renloss_21", "reference": null,
+                           "config": "variants/deeptex/render_loss/deeptex_renloss_21.yaml", "checkpoint_root": "{RSMOKE}/smoke_deeptex_renloss_21/checkpoints"},
     "esrgan_zs":          {"method": "esrgan_bsr", "display": "ESRGAN official (zero-shot)", "reference": null,
                            "config": null, "checkpoint_root": "/workspace/runs/sr_ft/weights"},
     "esrgan_ft":          {"method": "esrgan_bsr", "display": "ESRGAN official (fine-tuned)", "reference": "esrgan_zs",
@@ -58,8 +58,8 @@
                            "config": null, "checkpoint_root": "/workspace/external/matup_egsr/pretrained_models"}
   },
   "head_to_head": [
-    ["render_r1", "render_r0a"],
-    ["render_r1", "render_r0b"],
+    ["deeptex_renloss_21", "render_r0a"],
+    ["deeptex_renloss_21", "render_r0b"],
     ["render_r0a", "render_r0b"],
     ["matsynth_basecolor", "matsynth_chratio"],
     ["matsynth_all", "textures_db"],
@@ -69,7 +69,7 @@
     ["esrgan_ft", "matsynth_all"],
     ["swinir_cls_ft", "matsynth_all"],
     ["swinir_real_ft", "matsynth_all"],
-    ["swinir_real_ft", "render_r1"],
+    ["swinir_real_ft", "deeptex_renloss_21"],
     ["swinir_real_zs", "swinir_realL_zs"]
   ]
 }

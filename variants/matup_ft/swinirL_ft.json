@@ -33,7 +33,7 @@
     "train": {
       "name": "train_dataset"
       , "dataset_type": "sr"
-      // The MatSynth pairs R1 trains on (scripts/r1.sh pairs): five maps, one HR/LRx4 folder
+      // The shared MatSynth pairs (scripts/data.sh pairs, also deeptex_renloss_21's): five maps, one HR/LRx4 folder
       // pair each, area LR. KAIR's parser only takes a string here; train.py replaces these
       // two with the five folders of each side (--pairs), in the same order, so a batch mixes
       // the five maps 1:1 as comp1's flat folder did.

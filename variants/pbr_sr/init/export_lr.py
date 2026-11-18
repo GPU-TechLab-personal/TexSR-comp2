@@ -9,11 +9,13 @@ exactly the run's LR input:
   It treats the shipped 4096^2 textures as HR GT and makes the 1024^2 LR maps
   (pbr_sr/utils_online.py:402-477).
 
-The AO channel is also the official one. The study keeps the README's ks init for
-AO, i.e. HiT-SRF x4 on the LR ks:
-  - the model is built as run_pbr_sr.py:184-188 builds it;
-  - it is applied as run_pbr_sr.py:1366 applies it, net_g(ks.permute(0,3,1,2)).clamp(0,1);
-  - channel 0 is used, as run_pbr_sr.py:1376 uses it.
+The AO channel is the paper's ARM init (Sec. 3.2: "bicubic interpolation"), made the
+way the official US_bicubic ks init makes it, so every arm and the baseline start
+from the same AO (decided 2026-11-18; before, HiT-SRF x4 as the README's
+CAMixer_HiT_SR_x4 init):
+  - m_bicubic = torch.nn.Upsample(scale_factor=4, mode='bicubic') (run_pbr_sr.py:858),
+    applied to the LR ks as run_pbr_sr.py:1185 does;
+  - channel 0 is used. The official init does not clamp; the 8-bit PNG clamps to [0, 1].
 For Cgtrader the loader stores ks[...,0] = 1 - AO (utils_online.py:367). The
 `read` init loads PNGs without flipping, so that channel is written as it is.
 
@@ -22,7 +24,7 @@ Written to runs/pbr_sr/init/lr/ (--out):
   lr8/{baseColor,roughness,metallic,normal}.png         8-bit, DeepTextures' input
       (its decoder, tf.io.decode_image(channels=3), is the one training used, on
       8-bit PNGs)
-  ao_hit4.png    8-bit 4096^2: HiT-SRF x4 of LR ks[...,0] (= 1 - AO, as `read` wants)
+  ao_bicubic4.png  8-bit 4096^2: bicubic x4 of LR ks[...,0] (= 1 - AO, as `read` wants)
   mask.png       8-bit 4096^2: the loader's HR UV mask (albedo alpha > 0)
   meta.json      shapes, value ranges, sources
 
@@ -58,8 +60,6 @@ def main():
     import torch
     from PIL import Image
     from pbr_sr.utils_online import load_mesh_data
-    from pbr_sr.utils import setup_basicsr_namespace, yaml_load
-    from pbr_sr.paths import PBR_SR_CONFIG_DIR
 
     device = "cuda"
     mesh_gt, mesh_lr, hr_mask = load_mesh_data(args.data_dir, downsample_scale=args.scale, device=device)
@@ -95,18 +95,12 @@ def main():
         save(os.path.join(out, "lr8", name + ".png"), x, 8)
     save(os.path.join(out, "lr16", "height.png"), torch.full_like(ks[..., :1], 0.5), 16)
 
-    # HiT-SRF x4 on the LR ks, exactly as the official CAMixer_HiT_SR_x4 init does.
-    setup_basicsr_namespace(["./third_party/HiT_SR", "./third_party/CAMixerSR/codes"])
-    from basicsr.models import build_model
-    opt = yaml_load(os.path.join(PBR_SR_CONFIG_DIR, "hitsr", "test_single_x4.yml"))
-    opt["is_train"] = False
-    opt["dist"] = False
-    hit = build_model(opt)
+    # Bicubic x4 on the LR ks, exactly as the official US_bicubic ks init does.
+    m_bicubic = torch.nn.Upsample(scale_factor=args.scale, mode='bicubic')   # run_pbr_sr.py:858
     with torch.no_grad():
-        hit.net_g.eval()
-        hit4 = hit.net_g(mesh_lr.material.ks.data.permute(0, 3, 1, 2)).clamp(0.0, 1.0)
-    ao = hit4[0, 0][..., None]                     # [4H,4W,1] = 1 - AO, as `read` wants
-    save(os.path.join(out, "ao_hit4.png"), ao, 8)
+        ks4 = m_bicubic(mesh_lr.material.ks.data.permute(0, 3, 1, 2))          # run_pbr_sr.py:1185
+    ao = ks4[0, 0][..., None]                      # [4H,4W,1] = 1 - AO, as `read` wants
+    save(os.path.join(out, "ao_bicubic4.png"), ao, 8)
     save(os.path.join(out, "mask.png"), hr_mask[0].float(), 8)
 
     meta = {
@@ -115,14 +109,14 @@ def main():
         "lr_size": [H, W],
         "hr_size": list(mesh_gt.material.kd.data.shape[-3:-1]) if mesh_gt.material.kd.data.dim() == 4
                    else list(mesh_gt.material.kd.data.shape[:2]),
-        "ao_hit4_size": list(ao.shape[:2]),
+        "ao_bicubic4_size": list(ao.shape[:2]),
         "mask_fraction": float(hr_mask.float().mean()),
         "ranges": {k: [float(v.min()), float(v.max())] for k, v in
                    {"kd": kd, "ks_1-ao": ks[..., 0], "rough": ks[..., 1], "metal": ks[..., 2],
-                    "normal": n, "ao_hit4": ao}.items()},
+                    "normal": n, "ao_bicubic4": ao}.items()},
         "sources": {
             "lr": "pbr_sr/utils_online.py load_mesh_data(downsample_scale=%d)" % args.scale,
-            "ao_hit4": "HiT-SRF x4 (configs/hitsr/test_single_x4.yml) on LR ks, channel 0",
+            "ao_bicubic4": "torch.nn.Upsample(x%d, bicubic) on LR ks, channel 0 (official US_bicubic)" % args.scale,
             "height": "constant 0.5 (none shipped)",
         },
     }

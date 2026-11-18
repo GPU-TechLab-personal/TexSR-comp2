@@ -25,7 +25,7 @@ WHAT IS CHECKED, and why each check is needed:
   order       The record order equals material_order(_meta names, meta.seed,
               meta.limit), the builder's own function, and hashes to
               meta.order_sha256. Under --shuffle off this order is the
-              curriculum that R0a, R0b and R1 have to share.
+              curriculum that R0a, R0b and deeptex_renloss_21 have to share.
   PNG header  On every string, IHDR byte 24 (bit depth) == 8 and byte 25 (colour
               type) == 2 (RGB). texsr_verify_tfrecord.py:100-103 tests the dtype
               of decode_png(channels=0), but decode_png returns the REQUESTED

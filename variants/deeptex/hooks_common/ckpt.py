@@ -55,7 +55,7 @@ def restore(checkpoint, manager, generator, cfg):
 def weights_sha(model):
     """First 16 hex of sha256 over every weight (trainable or not), in
     model.get_weights() order. Equal across two runs = identical initial state;
-    the smoke gate compares R0 against R1 with it."""
+    the smoke gate compares R0 against deeptex_renloss_21 with it."""
     h = hashlib.sha256()
     for w in model.get_weights():
         h.update(np.ascontiguousarray(w).tobytes())

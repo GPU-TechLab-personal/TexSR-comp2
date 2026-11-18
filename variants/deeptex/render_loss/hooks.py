@@ -1,6 +1,6 @@
 """RL - the paper loop on grouped batches, plus MatUp's render loss.
 
-    --experiment render   (configs: render_loss/r0a.yaml, r0b.yaml, r1.yaml)
+    --experiment render   (configs: render_loss/r0a.yaml, r0b.yaml, deeptex_renloss_21.yaml)
 
 A declared experiment outside the paper, not a repair. One Example holds one
 material's five maps (grouped_dataset.py), so a step feeds B materials x 5 maps
@@ -15,10 +15,10 @@ exactly this file plus hooks_common/:
                  at start_step * batch (resume_dataset), so a resumed run sees
                  the crops the uninterrupted run would have
   build_losses   upstream's RaGAN, unchanged, + RenderLoss after it (it draws no
-                 random numbers, but nothing that differs between R0 and R1 may
+                 random numbers, but nothing that differs between R0 and deeptex_renloss_21 may
                  run before the seeded init)
   restore        hooks_common.ckpt (--pretrain-dir for the overfit gate) and the
-                 [init] g_sha/d_sha line the smoke gate pairs R0a with R1 by
+                 [init] g_sha/d_sha line the smoke gate pairs R0a with deeptex_renloss_21 by
   step_function  input_signature: one trace for the whole run
   pre_tape       (B,5,..) -> (5B,..) row-major, render target before the tape
   extra_loss     losses_G['render'] = w_render * l2,1   (added after 'gan', so
@@ -226,7 +226,7 @@ class RenderHooks(TrainerHooks):
             die(8, "grouped mode renders RGB maps; ch_size must be 3, got %r" % cfg["ch_size"])
         if seed is None:
             die(8, "grouped mode needs a seed (cfg `seed:` or --seed): it fixes the G/D "
-                   "init and keys every crop/flip/rot draw, which is what pairs R0 with R1")
+                   "init and keys every crop/flip/rot draw, which is what pairs R0 with deeptex_renloss_21")
         if a.overfit_batches < 0 or a.render_monitor_every < 0:
             die(8, "--overfit-batches and --render-monitor-every must be >= 0")
         self.w_render = resolve_w_render(cfg, a.w_render)
@@ -279,7 +279,7 @@ class RenderHooks(TrainerHooks):
 
     def restore(self, checkpoint, manager, generator, cfg):
         TrainerHooks.restore(self, checkpoint, manager, generator, cfg)
-        # The smoke gate requires R0 and R1 with the same seed to print the same
+        # The smoke gate requires R0 and deeptex_renloss_21 with the same seed to print the same
         # hashes here; that is what "paired" means for their init.
         print("[init] step=%d g_sha=%s d_sha=%s"
               % (int(checkpoint.step.numpy()), weights_sha(generator),
@@ -367,8 +367,8 @@ class RenderHooks(TrainerHooks):
         if self.render_probe is not None and (steps == 1 or steps == self.niter or
                                               steps % every == 0):
             # Measured BEFORE this step's update, i.e. on the generator whose
-            # forward the step's losses describe: R1's [terms] render equals
-            # w_render x this value, and step 1 is the init R0 and R1 share.
+            # forward the step's losses describe: deeptex_renloss_21's [terms] render equals
+            # w_render x this value, and step 1 is the init R0 and deeptex_renloss_21 share.
             l21 = float(self.render_probe(*batch).numpy())
             print("[render] step=%d l21=%.6f" % (steps, l21), flush=True)
             with self.writer.as_default():
