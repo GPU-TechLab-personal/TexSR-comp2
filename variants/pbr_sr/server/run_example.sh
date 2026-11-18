@@ -55,11 +55,15 @@
 #         type=list, so neither changes them from the command line).
 #       - Pool in the SSIM term: Eq. 6 average-pools T_theta for both L1 and SSIM; the code
 #         average-pools for L1 but resizes bicubically for SSIM (run_pbr_sr.py:4245-4275).
-#         Cradle_Globe's shipped textures are 4096^2
-#         (metal/rough 2048^2); the official loader treats them as the HR ground truth and
-#         builds the 1024^2 LR input itself (pbr_sr/utils_online.py:402-477), so the texture
-#         metrics are against them.
-#     
+#       - AO in L_tv: the TV term runs over kd, AO, roughness, metallic and normal together
+#         (run_pbr_sr.py:4351-4355), so AO keeps a TV term (weight 0.5) although it is out
+#         of L_pbr. Only --pbr_tv_loss / --tv_weight exist, and they switch TV off for every
+#         map, so it is left on.
+#
+#   Ground truth: Cradle_Globe's shipped textures are 4096^2 (metal/rough 2048^2); the
+#   official loader treats them as the HR ground truth and builds the 1024^2 LR input
+#   itself (pbr_sr/utils_online.py:402-477), so the texture metrics are against them.
+#
 # Then: bash variants/pbr_sr/server/status.sh RUN_NAME
 # Stop: docker stop pbrsr_RUN_NAME
 #

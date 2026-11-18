@@ -73,7 +73,7 @@ The `paper` preset (the default) sets every value the paper states. The table in
 - 2000 iterations, 5 DiffBIR steps, `w_Km` 0.1, no patch-consistency term (as before).
 - **Init (Sec. 3.2):** albedo by DiffBIR, ARM and normal bicubic. The code's default ks init is CAMixerSR + HiT-SRF x4; the preset passes `--ks_init_method US_bicubic`.
 - **SSIM weight 100 (Eq. 6 as written, decided 2026-11-18):** `L_total` multiplies `L_pbr` by `lambda_pbr` = 10, and `L_pbr` holds `lambda_ssim` = 10 inside, so SSIM gets 100 per map (metallic 10). The released code gives 10.
-- **No AO term in `L_pbr`:** Eq. 6 sums over {Kd, Kr, Km, Kn}. The code also puts AO in the L1 and SSIM terms; the preset sets both AO weights to 0.
+- **No AO term in `L_pbr`:** Eq. 6 sums over {Kd, Kr, Km, Kn}. The code also puts AO in the L1 and SSIM terms; the preset sets both AO weights to 0. AO still has a TV term: `L_tv` runs over kd, AO, roughness, metallic and normal together (`run_pbr_sr.py:4351-4355`), and no argument removes one map from it, so AO is regularised by TV (weight 0.5) though it has no data term.
 
 Not matched, because the code has no argument for them and is not edited:
 - **Evaluation views.** The paper evaluates on 240 views (6 elevations x 40). The code renders two fixed sets of 5 elevations x 20 = 100 views each, 512^2, FoV 5 and FoV 10 (`run_pbr_sr.py:759-773`). Undecided (2026-11-18).
