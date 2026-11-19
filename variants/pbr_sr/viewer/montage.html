@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Texture Montage</title>
+<!--
+  Texture-space montage of the PBR-SR results: the same UV crops of every result, side by
+  side, plus an overview of the GT map with the crops marked. Served by view.py.
+
+    montage.html#regions=x,y,s;x,y,s;...      crops in GT texel coordinates (4096^2, top-left
+                                              origin as in the PNG), s = crop size in texels
+                &cols=gt,lr,paper_init,...    columns (default: GT, LR, every init/final)
+                &map=kd|rough|metal|ao|n      which map (default kd)
+                &cell=256                     display px per crop (nearest-neighbour)
+                &names=a;b;...                optional row captions
+                &shot=<name>                  save runs/pbr_sr/viewer/shots/<name>.png via view.py
+    montage.html#grid=1&map=kd                GT map with a 256-texel coordinate grid (for picking)
+
+  Pixels are shown raw (no colour management, nearest-neighbour), so a 4096 crop of s texels
+  is s texels wide, and the LR (1024) crop is the same UV area, 4x fewer texels.
+-->
+<style>
+  html, body { margin: 0; background: #fff; color: #111; font: 13px system-ui, "Malgun Gothic", sans-serif; }
+  #msg { position: fixed; right: 8px; bottom: 6px; color: #555; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="msg">불러오는 중…</div>
+<script type="module">
+const BASE = '/runs/pbr_sr/viewer/';
+const H = new URLSearchParams(location.hash.slice(1));
+const msg = t => { document.getElementById('msg').textContent = t; };
+const man = await (await fetch(BASE + 'manifest.json')).json();
+const byId = Object.fromEntries(man.panels.map(p => [p.id, p]));
+const MAP = H.get('map') || 'kd';
+const file = { kd: 'kd', rough: 'ks', metal: 'ks', ao: 'ks', n: 'n' }[MAP];
+const chan = { rough: 1, metal: 2, ao: 0 }[MAP];          // ks channel; ao shown as 1 - R
+const FONT = '"Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif';
+
+async function bitmap(id) {
+  const blob = await (await fetch(BASE + byId[id].maps[file])).blob();
+  return createImageBitmap(blob, { premultiplyAlpha: 'none', colorSpaceConversion: 'none' });
+}
+// draw a crop (texel rect of the 4096 GT space) of bitmap bm into ctx at (dx,dy,dw,dh)
+function crop(ctx, bm, x, y, s, dx, dy, dw, dh) {
+  const k = bm.width / 4096;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(bm, x * k, y * k, s * k, s * k, dx, dy, dw, dh);
+  if (chan !== undefined) {           // single ks channel as grey
+    const im = ctx.getImageData(dx, dy, dw, dh), d = im.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const v = MAP === 'ao' ? 255 - d[i] : d[i + chan];
+      d[i] = d[i + 1] = d[i + 2] = v;
+    }
+    ctx.putImageData(im, dx, dy);
+  }
+}
+
+const cv = document.getElementById('c'), g = cv.getContext('2d', { willReadFrequently: chan !== undefined });
+
+if (H.get('grid')) {
+  // ---- picking aid: GT map at 2048 px with a 256-texel grid
+  const bm = await bitmap(H.get('src') || 'gt'), S = 2048, step = 256, k = S / 4096;
+  cv.width = S; cv.height = S;
+  crop(g, bm, 0, 0, 4096, 0, 0, S, S);
+  g.strokeStyle = 'rgba(255,0,255,.8)'; g.fillStyle = '#f0f'; g.font = `bold 14px ${FONT}`; g.lineWidth = 1;
+  for (let t = 0; t <= 4096; t += step) {
+    g.beginPath(); g.moveTo(t * k + .5, 0); g.lineTo(t * k + .5, S); g.stroke();
+    g.beginPath(); g.moveTo(0, t * k + .5); g.lineTo(S, t * k + .5); g.stroke();
+  }
+  for (let y = 0; y < 4096; y += step) for (let x = 0; x < 4096; x += step * 2)
+    g.fillText(`${x},${y}`, x * k + 3, y * k + 15);
+} else {
+  // ---- montage
+  const cols = (H.get('cols') || 'gt,lr,paper_init,paper_final,matup_init,matup_final,matup_ft_init,matup_ft_final,deeptex_init,deeptex_final')
+    .split(',').filter(id => byId[id]);
+  const regions = (H.get('regions') || '').split(';').filter(Boolean).map(r => r.split(',').map(Number));
+  const names = (H.get('names') || '').split(';');
+  const cell = +(H.get('cell') || 256), gap = 4, fs = Math.max(13, Math.round(cell / 15));
+  const left = Math.round(fs * 2), head = Math.round(fs * 3.2);
+  // overview=auto: as tall as the grid; overview=<px>: that size; absent: none
+  const ov = H.get('overview') === 'auto' ? regions.length * (cell + gap) - gap : +(H.get('overview') || 0);
+  msg(`불러오는 중 0/${cols.length}`);
+  let done = 0;
+  const bms = await Promise.all(cols.map(id => bitmap(id).then(b => { msg(`불러오는 중 ${++done}/${cols.length}`); return b; })));
+  const gridW = left + cols.length * (cell + gap);
+  const ovS = ov || 0, ovPad = ovS ? 16 : 0;
+  cv.width = gridW + (ovS ? ovS + ovPad * 2 : 0);
+  cv.height = Math.max(head + regions.length * (cell + gap) + 8, ovS ? head + ovS + 8 : 0);
+  g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height);
+  // column labels (two lines when the label has a ':' or '+')
+  g.fillStyle = '#111'; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  cols.forEach((id, j) => {
+    const p = byId[id], cx = left + j * (cell + gap) + cell / 2;
+    const [a, b] = p.label.includes(' + ') ? p.label.split(' + ') : p.label.includes(': ') ? p.label.split(': ') : [p.label, ''];
+    g.font = `bold ${fs}px ${FONT}`; g.fillText(b ? (p.label.includes(' + ') ? a + ' +' : a + ':') : a, cx, fs * 1.25);
+    g.font = `${Math.round(fs * 0.9)}px ${FONT}`; g.fillText((b || '') + `  (${p.res}²)`, cx, fs * 2.55);
+  });
+  // rows
+  regions.forEach(([x, y, s], i) => {
+    const dy = head + i * (cell + gap);
+    g.save(); g.translate(fs * 1.1, dy + cell / 2); g.rotate(-Math.PI / 2);
+    g.font = `bold ${fs}px ${FONT}`; g.textAlign = 'center'; g.fillStyle = '#111';
+    g.fillText(`${i + 1}${names[i] ? '  ' + names[i] : ''}`, 0, 0); g.restore();
+    cols.forEach((id, j) => crop(g, bms[j], x, y, s, left + j * (cell + gap), dy, cell, cell));
+  });
+  // overview: GT map with the crops marked
+  if (ovS) {
+    const ox = gridW + ovPad, oy = head, k = ovS / 4096;
+    crop(g, bms[cols.indexOf('gt')] || bms[0], 0, 0, 4096, ox, oy, ovS, ovS);
+    g.strokeStyle = '#ff2d2d'; g.lineWidth = Math.max(3, fs / 6); g.font = `bold ${Math.round(fs * 1.6)}px ${FONT}`; g.textAlign = 'left';
+    g.textBaseline = 'top';
+    regions.forEach(([x, y, s], i) => {
+      const b = Math.max(s * k, 6);
+      g.strokeRect(ox + x * k, oy + y * k, b, b);
+      g.fillStyle = '#ff2d2d'; g.fillText(String(i + 1), ox + x * k + b + 6, oy + y * k);
+    });
+    g.fillStyle = '#111'; g.font = `bold ${fs}px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.fillText(`GT ${MAP} 전체 (4096²) · 빨간 상자 = 확대 위치`, ox + ovS / 2, fs * 1.9);
+  }
+}
+msg('');
+if (H.get('shot')) {
+  const b = await new Promise(r => cv.toBlob(r, 'image/png'));
+  await fetch('/__shot/' + encodeURIComponent(H.get('shot')), { method: 'POST', body: b });
+  msg('saved');
+}
+</script>
+</body>
+</html>

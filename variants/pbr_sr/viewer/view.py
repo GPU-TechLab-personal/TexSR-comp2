@@ -42,6 +42,8 @@ ARMS = {
     "cradle_globe_paper_matup": ("matup", "PBR-SR + MatUp init", "init: MatUp"),
     "cradle_globe_paper_matup_ft": ("matup_ft", "PBR-SR + MatUp-ft init", "init: MatUp-ft"),
     "cradle_globe_paper_deeptex_renloss_21": ("deeptex", "PBR-SR + DeepTex-R21 init", "init: DeepTex-R21"),
+    # ablation: paper init, SSIM weight 10 instead of 100 (same init as "paper": shown once)
+    "cradle_globe_paper_ssim10": ("paper_ssim10", "PBR-SR (paper init, SSIM 10)", None),
 }
 MAPS = ("kd", "ks", "n")          # texture_kd.png, texture_ks.png, texture_n.png
 ROWS = ("Base color", "Roughness", "Metallic", "Occlusion", "Normal")
@@ -142,6 +144,8 @@ def collect():
                 for k, v in d.items():
                     metrics.setdefault(step, {}).setdefault(k, v)
         stages = [("init", "init_mehs", init_label, 0), ("final", os.path.join("final_results_val", "mesh"), final_label, 2000)]
+        if init_label is None:   # init identical to another arm's
+            stages = stages[1:]
         if not shared_done:   # GT and LR are the same in every run: take them once
             stages = [("gt", "gt_mehs", "GT", None), ("lr", "lr_mehs", "LR input", None)] + stages
         for stage, sub, label, step in stages:

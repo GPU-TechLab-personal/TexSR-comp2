@@ -176,6 +176,11 @@ bash variants/pbr_sr/server/status.sh cradle_globe_paper_deeptex_renloss_21
 tail -f runs/pbr_sr/logs/cradle_globe_paper_deeptex_renloss_21.log
 docker stop pbrsr_cradle_globe_paper_deeptex_renloss_21
 
+# 6-6 (절제 실험) [4]와 같고 SSIM 가중치만 100 -> 10. PBR-SR 후 4텍셀 모자이크가 이 가중치 탓인지 확인
+#     CACHE_FROM: [4]의 pseudo-GT(.pt)를 그대로 읽음 (init이 같으니 유효, 약 57분 절약, pseudo-GT도 동일)
+#     실행 이름: cradle_globe_paper_ssim10
+SSIM_W=10 CACHE_FROM=cradle_globe_paper bash variants/pbr_sr/server/run_example.sh
+
 # 결과를 다른 PC로 가져가기 (.gitignore가 렌더에 필요한 메시/텍스처/지표만 올림)
 git config core.longpaths true     # 한 번만. 실험 폴더 경로가 260자를 넘음
 git add runs && git commit -m "PBR-SR results" && git push

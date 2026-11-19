@@ -20,6 +20,14 @@
 #               else (pseudo-GT, preset, losses) is unchanged. Default RUN_NAME gets
 #               the suffix _<INIT>.
 #   VIEWS_TEST=1  pipeline test only: --train_elev_index 1 (50 views, not the paper's 750)
+#   SSIM_W=10   paper preset only: --pbr_interpolate_ssim_weight (default 100, see below).
+#               Any other value adds _ssim<SSIM_W> to the default RUN_NAME, so the baseline
+#               is not overwritten. Ablation for the 4-texel mosaic seen after PBR-SR.
+#   CACHE_FROM=<RUN>  read the pseudo-GT from runs/pbr_sr/<RUN>/cache_render instead of
+#               building it (~57 min saved, and an identical pseudo-GT). Only valid when
+#               <RUN> has the SAME init: the cache file name does not encode the init
+#               (run_pbr_sr.py:2085), so another arm's .pt would load silently. If the .pt is
+#               missing there, it is built and written into that folder.
 #
 # PRESET paper - every value the paper states, mapped onto the official arguments
 # (PBR-SR, NeurIPS 2025, Sec. 3.3/3.5, Implementation Details, App. A.2). Arguments
@@ -80,7 +88,14 @@ cd "$REPO"
 CONFIG=${2:-official}
 PRESET=${3:-paper}
 INIT=${INIT:-}
-RUN=${1:-cradle_globe_$PRESET${INIT:+_$INIT}}
+SSIM_W=${SSIM_W:-100}
+[ "$PRESET" = paper ] || [ "$SSIM_W" = 100 ] || { echo "SSIM_W only applies to the paper preset" >&2; exit 1; }
+SSIM_SUFFIX=; [ "$SSIM_W" = 100 ] || SSIM_SUFFIX=_ssim$SSIM_W
+RUN=${1:-cradle_globe_$PRESET${INIT:+_$INIT}$SSIM_SUFFIX}
+CACHE_RUN=${CACHE_FROM:-$RUN}
+if [ -n "${CACHE_FROM:-}" ] && ! ls runs/pbr_sr/$CACHE_FROM/cache_render/*.pt >/dev/null 2>&1; then
+  echo "note: no .pt in runs/pbr_sr/$CACHE_FROM/cache_render - the pseudo-GT will be built (and saved there)" >&2
+fi
 NAME=pbrsr_$RUN
 case "$CONFIG" in
   official) CFG_ENV=() ;;
@@ -92,7 +107,7 @@ case "$PRESET" in
           KS_INIT=US_bicubic
           EXTRA="--diffbir_steps 5 \
  --matellic_weight_l1 0.1 --matellic_weight_interpolate_ssim 0.1 \
- --pbr_interpolate_ssim_weight 100 --n_weight_interpolate_ssim 1.0 \
+ --pbr_interpolate_ssim_weight $SSIM_W --n_weight_interpolate_ssim 1.0 \
  --occlusion_weight_l1 0 --occlusion_weight_interpolate_ssim 0 \
  --pbr_patch_consistency_weight 0" ;;
   readme) N_ITER=${N_ITER:-10000}
@@ -131,7 +146,7 @@ PY="python run_pbr_sr.py \
  $INIT_ARGS \
  --pbr_sr_scale 4 \
  --img_sr_model 'DiffBIR_x4' \
- --render_cache_dir '$W/runs/pbr_sr/$RUN/cache_render' \
+ --render_cache_dir '$W/runs/pbr_sr/$CACHE_RUN/cache_render' \
  --robust_opti \
  $EXTRA"
 L=$W/$LOGS/$RUN
@@ -148,7 +163,7 @@ mkdir -p "$(dirname "$DATA")" "$LOGS"
 [ -n "$INIT" ] && cp "$INIT_DIR"/sr_kd_output.png "$INIT_DIR"/sr_ks_output.png "$INIT_DIR"/sr_n_output.png "$DATA/"
 [ -f "$LOGS/$RUN.log" ] && mv "$LOGS/$RUN.log" "$LOGS/$RUN.prev_$(date +%Y%m%d_%H%M%S).log"
 rm -f "$LOGS/$RUN.end"
-{ echo "start $(date +%FT%T) host=$(hostname) config=$CONFIG preset=$PRESET init=${INIT:-official} n_iter=$N_ITER"
+{ echo "start $(date +%FT%T) host=$(hostname) config=$CONFIG preset=$PRESET init=${INIT:-official} n_iter=$N_ITER ssim_w=$SSIM_W cache=$CACHE_RUN"
   echo "$PY"; } > "$LOGS/$RUN.start"
 
 ( cd docker && $DC run -d -T --name "$NAME" ${CFG_ENV[@]+"${CFG_ENV[@]}"} pbrsr bash -c "$INNER" )
