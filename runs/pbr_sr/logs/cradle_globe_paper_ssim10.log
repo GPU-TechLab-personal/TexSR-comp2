@@ -1,0 +1,181 @@
+CONFIG=official CONFIG_DIR=official configs/
+GPU 0: NVIDIA GeForce RTX 5090 (UUID: GPU-94d70659-3ded-5e47-b32c-70ce347ed076)
+Experment: Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64
+Using /workspace/runs/pbr_sr/cache/torch_extensions as PyTorch extensions root...
+Detected CUDA files, patching ldflags
+Emitting ninja build file /workspace/runs/pbr_sr/cache/torch_extensions/renderutils_plugin/build.ninja...
+Building extension module renderutils_plugin...
+Allowing ninja to set a default number of workers... (overridable by setting the environment variable MAX_JOBS=N)
+ninja: no work to do.
+Loading extension module renderutils_plugin...
+**************** Loading 1 envmaps for training
+use xformers attention as default
+set attention mode to sdp
+failed to import ram, error: No module named 'fairscale'
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is None and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is 1024 and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is None and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is 1024 and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is None and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is 1024 and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is None and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is 1024 and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is None and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is 1024 and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is None and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is 1024 and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is None and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is 1024 and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is None and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is 1024 and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is None and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is 1024 and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is None and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is 1024 and using 5 heads.
+building SDPAttnBlock (sdp) with 512 in_channels
+building SDPAttnBlock (sdp) with 512 in_channels
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is None and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is 1024 and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is None and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 320, context_dim is 1024 and using 5 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is None and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is 1024 and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is None and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 640, context_dim is 1024 and using 10 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is None and using 20 heads.
+Setting up SDPCrossAttention (sdp). Query dim is 1280, context_dim is 1024 and using 20 heads.
+load pretrained stable diffusion, unused weights: {'cond_stage_model.model.transformer.text_model.embeddings.position_ids'}, missing weights: {'cond_stage_model.model.transformer.resblocks.23.ln_2.bias', 'cond_stage_model.model.transformer.resblocks.23.attn.in_proj_weight', 'cond_stage_model.model.transformer.resblocks.23.mlp.c_proj.weight', 'cond_stage_model.model.transformer.resblocks.23.ln_1.bias', 'cond_stage_model.model.transformer.resblocks.23.mlp.c_fc.weight', 'cond_stage_model.model.transformer.resblocks.23.attn.out_proj.bias', 'cond_stage_model.model.text_projection', 'cond_stage_model.model.transformer.resblocks.23.ln_1.weight', 'cond_stage_model.model.transformer.resblocks.23.mlp.c_proj.bias', 'cond_stage_model.model.transformer.resblocks.23.ln_2.weight', 'cond_stage_model.model.transformer.resblocks.23.attn.in_proj_bias', 'cond_stage_model.model.logit_scale', 'cond_stage_model.model.transformer.resblocks.23.attn.out_proj.weight', 'cond_stage_model.model.transformer.resblocks.23.mlp.c_fc.bias'}
+load controlnet weight
+ -------pbr downsampled scale.:4, cam big sr by scale.:2, target sr scale:4
+***************Generating Init KD Map using DiffBIR **************
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:07,  1.13it/s] 20%|██        | 2/10 [00:01<00:06,  1.33it/s] 30%|███       | 3/10 [00:02<00:04,  1.42it/s] 40%|████      | 4/10 [00:02<00:04,  1.46it/s] 50%|█████     | 5/10 [00:03<00:03,  1.48it/s] 60%|██████    | 6/10 [00:04<00:02,  1.50it/s] 70%|███████   | 7/10 [00:04<00:01,  1.51it/s] 80%|████████  | 8/10 [00:05<00:01,  1.52it/s] 90%|█████████ | 9/10 [00:06<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.48it/s]
+Tile 2/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.34it/s] 20%|██        | 2/10 [00:01<00:05,  1.46it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:03,  1.51it/s] 50%|█████     | 5/10 [00:03<00:03,  1.51it/s] 60%|██████    | 6/10 [00:04<00:02,  1.52it/s] 70%|███████   | 7/10 [00:04<00:01,  1.52it/s] 80%|████████  | 8/10 [00:05<00:01,  1.52it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 3/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.35it/s] 20%|██        | 2/10 [00:01<00:05,  1.46it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:03,  1.51it/s] 50%|█████     | 5/10 [00:03<00:03,  1.52it/s] 60%|██████    | 6/10 [00:03<00:02,  1.53it/s] 70%|███████   | 7/10 [00:04<00:01,  1.54it/s] 80%|████████  | 8/10 [00:05<00:01,  1.53it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.52it/s]
+Tile 4/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.35it/s] 20%|██        | 2/10 [00:01<00:05,  1.44it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:03,  1.50it/s] 50%|█████     | 5/10 [00:03<00:03,  1.52it/s] 60%|██████    | 6/10 [00:03<00:02,  1.53it/s] 70%|███████   | 7/10 [00:04<00:01,  1.53it/s] 80%|████████  | 8/10 [00:05<00:01,  1.53it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.52it/s]
+Tile 5/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:02,  3.15it/s] 20%|██        | 2/10 [00:00<00:02,  3.80it/s] 30%|███       | 3/10 [00:00<00:01,  4.01it/s] 40%|████      | 4/10 [00:00<00:01,  4.18it/s] 50%|█████     | 5/10 [00:01<00:01,  4.29it/s] 60%|██████    | 6/10 [00:01<00:00,  4.29it/s] 70%|███████   | 7/10 [00:01<00:00,  4.38it/s] 80%|████████  | 8/10 [00:01<00:00,  4.36it/s] 90%|█████████ | 9/10 [00:02<00:00,  4.43it/s]100%|██████████| 10/10 [00:02<00:00,  4.44it/s]100%|██████████| 10/10 [00:02<00:00,  4.26it/s]
+Tile 6/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.36it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:03,  1.51it/s] 50%|█████     | 5/10 [00:03<00:03,  1.51it/s] 60%|██████    | 6/10 [00:04<00:02,  1.52it/s] 70%|███████   | 7/10 [00:04<00:01,  1.53it/s] 80%|████████  | 8/10 [00:05<00:01,  1.53it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.52it/s]
+Tile 7/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.35it/s] 20%|██        | 2/10 [00:01<00:05,  1.44it/s] 30%|███       | 3/10 [00:02<00:04,  1.48it/s] 40%|████      | 4/10 [00:02<00:03,  1.51it/s] 50%|█████     | 5/10 [00:03<00:03,  1.52it/s] 60%|██████    | 6/10 [00:03<00:02,  1.52it/s] 70%|███████   | 7/10 [00:04<00:01,  1.52it/s] 80%|████████  | 8/10 [00:05<00:01,  1.52it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.52it/s]
+Tile 8/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.34it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.48it/s] 40%|████      | 4/10 [00:02<00:04,  1.50it/s] 50%|█████     | 5/10 [00:03<00:03,  1.51it/s] 60%|██████    | 6/10 [00:04<00:02,  1.51it/s] 70%|███████   | 7/10 [00:04<00:01,  1.53it/s] 80%|████████  | 8/10 [00:05<00:01,  1.53it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 9/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.34it/s] 20%|██        | 2/10 [00:01<00:05,  1.44it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:03,  1.50it/s] 50%|█████     | 5/10 [00:03<00:03,  1.52it/s] 60%|██████    | 6/10 [00:04<00:02,  1.53it/s] 70%|███████   | 7/10 [00:04<00:01,  1.53it/s] 80%|████████  | 8/10 [00:05<00:01,  1.53it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.55it/s]100%|██████████| 10/10 [00:06<00:00,  1.52it/s]
+Tile 10/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:02,  4.18it/s] 20%|██        | 2/10 [00:00<00:01,  4.40it/s] 30%|███       | 3/10 [00:00<00:01,  4.53it/s] 40%|████      | 4/10 [00:00<00:01,  4.49it/s] 50%|█████     | 5/10 [00:01<00:01,  4.50it/s] 60%|██████    | 6/10 [00:01<00:00,  4.52it/s] 70%|███████   | 7/10 [00:01<00:00,  4.59it/s] 80%|████████  | 8/10 [00:01<00:00,  4.58it/s] 90%|█████████ | 9/10 [00:01<00:00,  4.62it/s]100%|██████████| 10/10 [00:02<00:00,  4.70it/s]100%|██████████| 10/10 [00:02<00:00,  4.58it/s]
+Tile 11/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.33it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:04,  1.50it/s] 50%|█████     | 5/10 [00:03<00:03,  1.52it/s] 60%|██████    | 6/10 [00:04<00:02,  1.52it/s] 70%|███████   | 7/10 [00:04<00:01,  1.53it/s] 80%|████████  | 8/10 [00:05<00:01,  1.53it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.55it/s]100%|██████████| 10/10 [00:06<00:00,  1.52it/s]
+Tile 12/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.35it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:04,  1.50it/s] 50%|█████     | 5/10 [00:03<00:03,  1.51it/s] 60%|██████    | 6/10 [00:04<00:02,  1.51it/s] 70%|███████   | 7/10 [00:04<00:01,  1.52it/s] 80%|████████  | 8/10 [00:05<00:01,  1.52it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 13/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.34it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:03,  1.51it/s] 50%|█████     | 5/10 [00:03<00:03,  1.52it/s] 60%|██████    | 6/10 [00:04<00:02,  1.52it/s] 70%|███████   | 7/10 [00:04<00:01,  1.53it/s] 80%|████████  | 8/10 [00:05<00:01,  1.53it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 14/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.35it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:03,  1.51it/s] 50%|█████     | 5/10 [00:03<00:03,  1.52it/s] 60%|██████    | 6/10 [00:04<00:02,  1.52it/s] 70%|███████   | 7/10 [00:04<00:01,  1.52it/s] 80%|████████  | 8/10 [00:05<00:01,  1.52it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.54it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 15/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:02,  4.21it/s] 20%|██        | 2/10 [00:00<00:01,  4.38it/s] 30%|███       | 3/10 [00:00<00:01,  4.47it/s] 40%|████      | 4/10 [00:00<00:01,  4.49it/s] 50%|█████     | 5/10 [00:01<00:01,  4.54it/s] 60%|██████    | 6/10 [00:01<00:00,  4.61it/s] 70%|███████   | 7/10 [00:01<00:00,  4.58it/s] 80%|████████  | 8/10 [00:01<00:00,  4.53it/s] 90%|█████████ | 9/10 [00:01<00:00,  4.55it/s]100%|██████████| 10/10 [00:02<00:00,  4.68it/s]100%|██████████| 10/10 [00:02<00:00,  4.57it/s]
+Tile 16/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.34it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.48it/s] 40%|████      | 4/10 [00:02<00:03,  1.50it/s] 50%|█████     | 5/10 [00:03<00:03,  1.51it/s] 60%|██████    | 6/10 [00:04<00:02,  1.52it/s] 70%|███████   | 7/10 [00:04<00:01,  1.52it/s] 80%|████████  | 8/10 [00:05<00:01,  1.53it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 17/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.33it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.48it/s] 40%|████      | 4/10 [00:02<00:04,  1.49it/s] 50%|█████     | 5/10 [00:03<00:03,  1.50it/s] 60%|██████    | 6/10 [00:04<00:02,  1.52it/s] 70%|███████   | 7/10 [00:04<00:01,  1.52it/s] 80%|████████  | 8/10 [00:05<00:01,  1.52it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.52it/s]100%|██████████| 10/10 [00:06<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 18/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.34it/s] 20%|██        | 2/10 [00:01<00:05,  1.45it/s] 30%|███       | 3/10 [00:02<00:04,  1.49it/s] 40%|████      | 4/10 [00:02<00:03,  1.50it/s] 50%|█████     | 5/10 [00:03<00:03,  1.51it/s] 60%|██████    | 6/10 [00:04<00:02,  1.51it/s] 70%|███████   | 7/10 [00:04<00:01,  1.52it/s] 80%|████████  | 8/10 [00:05<00:01,  1.52it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 19/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:06,  1.33it/s] 20%|██        | 2/10 [00:01<00:05,  1.44it/s] 30%|███       | 3/10 [00:02<00:04,  1.48it/s] 40%|████      | 4/10 [00:02<00:03,  1.50it/s] 50%|█████     | 5/10 [00:03<00:03,  1.51it/s] 60%|██████    | 6/10 [00:04<00:02,  1.51it/s] 70%|███████   | 7/10 [00:04<00:01,  1.51it/s] 80%|████████  | 8/10 [00:05<00:01,  1.52it/s] 90%|█████████ | 9/10 [00:05<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.53it/s]100%|██████████| 10/10 [00:06<00:00,  1.51it/s]
+Tile 20/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:02,  4.17it/s] 20%|██        | 2/10 [00:00<00:01,  4.37it/s] 30%|███       | 3/10 [00:00<00:01,  4.37it/s] 40%|████      | 4/10 [00:00<00:01,  4.49it/s] 50%|█████     | 5/10 [00:01<00:01,  4.46it/s] 60%|██████    | 6/10 [00:01<00:00,  4.51it/s] 70%|███████   | 7/10 [00:01<00:00,  4.56it/s] 80%|████████  | 8/10 [00:01<00:00,  4.55it/s] 90%|█████████ | 9/10 [00:01<00:00,  4.60it/s]100%|██████████| 10/10 [00:02<00:00,  4.68it/s]100%|██████████| 10/10 [00:02<00:00,  4.54it/s]
+Tile 21/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:02,  3.80it/s] 20%|██        | 2/10 [00:00<00:01,  4.19it/s] 30%|███       | 3/10 [00:00<00:01,  4.38it/s] 40%|████      | 4/10 [00:00<00:01,  4.46it/s] 50%|█████     | 5/10 [00:01<00:01,  4.49it/s] 60%|██████    | 6/10 [00:01<00:00,  4.48it/s] 70%|███████   | 7/10 [00:01<00:00,  4.51it/s] 80%|████████  | 8/10 [00:01<00:00,  4.53it/s] 90%|█████████ | 9/10 [00:02<00:00,  4.54it/s]100%|██████████| 10/10 [00:02<00:00,  4.65it/s]100%|██████████| 10/10 [00:02<00:00,  4.50it/s]
+Tile 22/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:02,  4.20it/s] 20%|██        | 2/10 [00:00<00:01,  4.32it/s] 30%|███       | 3/10 [00:00<00:01,  4.44it/s] 40%|████      | 4/10 [00:00<00:01,  4.57it/s] 50%|█████     | 5/10 [00:01<00:01,  4.56it/s] 60%|██████    | 6/10 [00:01<00:00,  4.63it/s] 70%|███████   | 7/10 [00:01<00:00,  4.57it/s] 80%|████████  | 8/10 [00:01<00:00,  4.58it/s] 90%|█████████ | 9/10 [00:01<00:00,  4.63it/s]100%|██████████| 10/10 [00:02<00:00,  4.70it/s]100%|██████████| 10/10 [00:02<00:00,  4.59it/s]
+Tile 23/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:02,  4.23it/s] 20%|██        | 2/10 [00:00<00:01,  4.47it/s] 30%|███       | 3/10 [00:00<00:01,  4.55it/s] 40%|████      | 4/10 [00:00<00:01,  4.51it/s] 50%|█████     | 5/10 [00:01<00:01,  4.58it/s] 60%|██████    | 6/10 [00:01<00:00,  4.60it/s] 70%|███████   | 7/10 [00:01<00:00,  4.57it/s] 80%|████████  | 8/10 [00:01<00:00,  4.66it/s] 90%|█████████ | 9/10 [00:01<00:00,  4.70it/s]100%|██████████| 10/10 [00:02<00:00,  4.77it/s]100%|██████████| 10/10 [00:02<00:00,  4.63it/s]
+Tile 24/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:02,  4.15it/s] 20%|██        | 2/10 [00:00<00:01,  4.38it/s] 30%|███       | 3/10 [00:00<00:01,  4.44it/s] 40%|████      | 4/10 [00:00<00:01,  4.48it/s] 50%|█████     | 5/10 [00:01<00:01,  4.48it/s] 60%|██████    | 6/10 [00:01<00:00,  4.47it/s] 70%|███████   | 7/10 [00:01<00:00,  4.52it/s] 80%|████████  | 8/10 [00:01<00:00,  4.59it/s] 90%|█████████ | 9/10 [00:01<00:00,  4.65it/s]100%|██████████| 10/10 [00:02<00:00,  4.72it/s]100%|██████████| 10/10 [00:02<00:00,  4.56it/s]
+Tile 25/25 processed.
+  0%|          | 0/10 [00:00<?, ?it/s] 10%|█         | 1/10 [00:00<00:01,  5.46it/s] 20%|██        | 2/10 [00:00<00:01,  5.81it/s] 30%|███       | 3/10 [00:00<00:01,  6.43it/s] 40%|████      | 4/10 [00:00<00:00,  6.64it/s] 50%|█████     | 5/10 [00:00<00:00,  6.49it/s] 60%|██████    | 6/10 [00:00<00:00,  6.62it/s] 70%|███████   | 7/10 [00:01<00:00,  6.85it/s] 80%|████████  | 8/10 [00:01<00:00,  6.85it/s] 90%|█████████ | 9/10 [00:01<00:00,  7.16it/s]100%|██████████| 10/10 [00:01<00:00,  7.69it/s]100%|██████████| 10/10 [00:01<00:00,  6.90it/s]
+Tile 26/25 processed.
+Cams num:  750
+Loaded Render Cache File: /workspace/runs/pbr_sr/cradle_globe_paper/cache_render/MESH_Cradle_Globe_SRMODEL_DiffBIR_x4_LGT_mud_road_puresky_4k_LGTSCALE_2.0_FOV_10_ELEVNUM_15_VIEWNUM50_PROMPT_pbr_STARTTYPE_noisewrap_DIFFBIRSTRPS_5.pt
+----- Start optimization: -----
+Val_set1: Env.Lighting = mud_road_puresky_4k, Renderings from STEP0 PBR: PSNR=30.678, SSIM=0.878, LPIPS=0.210, BLUR=0.458, DISTS=0.192, 
+Val_set2: Env.Lighting = mud_road_puresky_4k, Renderings from STEP0 PBR: PSNR=34.017, SSIM=0.894, LPIPS=0.184, BLUR=0.378, DISTS=0.126, 
+Writing mesh:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/init_results_val/mesh/mesh.obj
+    writing 8505 vertices
+    writing 8505 texcoords
+    writing 8505 normals
+    writing 14288 faces
+Writing material:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/init_results_val/mesh/mesh.mtl
+Done exporting mesh
+Writing mesh:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/lr_mehs/mesh.obj
+    writing 8505 vertices
+    writing 8505 texcoords
+    writing 8505 normals
+    writing 14288 faces
+Writing material:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/lr_mehs/mesh.mtl
+Done exporting mesh
+Writing mesh:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/gt_mehs/mesh.obj
+    writing 8505 vertices
+    writing 8505 texcoords
+    writing 8505 normals
+    writing 14288 faces
+Writing material:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/gt_mehs/mesh.mtl
+Done exporting mesh
+Writing mesh:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/init_mehs/mesh.obj
+    writing 8505 vertices
+    writing 8505 texcoords
+    writing 8505 normals
+    writing 14288 faces
+Writing material:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/init_mehs/mesh.mtl
+Done exporting mesh
+SR PBR -- Step:0
+            mean L1 distance           MSE  psnr masked region  mean L1 distance whole  MSE whole  PSNR whole
+Base color          0.037712  3.621155e-03           24.411528                0.017749   0.003629   24.402176
+Roughness           0.000014  4.399584e-08           65.916977                0.001731   0.000071   34.704784
+Metallic            0.000015  1.201022e-07           69.726944                0.001728   0.000253   37.298122
+Occlusion           0.006701  2.510261e-04           36.875435                0.005333   0.000662   33.168495
+Normal              0.014977  2.552801e-03           31.950432                0.005649   0.000947   36.256153
+DiffBIR_x4 render_sr_evaluation_dict: {'psnr_imgs1': 28.407, 'psnr_imgs2': 26.85, 'ssim_imgs1': 0.885, 'ssim_imgs2': 0.742, 'lpips_imgs1': 0.226, 'lpips_imgs2': 0.52, 'l1_imgs1': 0.01802, 'l1_imgs2': 0.02519, 'mse_imgs1': 0.00143, 'mse_imgs2': 0.00205}
+[Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64] iter: 0 render_mse_loss_diffbir_sr4: 0.35168076 robust_opti_regularization: 0.00000000 weighted_mse_loss: 0.35168076 render_loss_sum: 0.35168076 pbr_kd_loss_l1: 0.02629969 pbr_occlusion_loss_l1: 0.00000000 pbr_roughness_loss_l1: 0.00002342 pbr_matellic_loss_l1: 0.00000224 pbr_n_loss_l1: 0.00654856 pbr_loss_l1: 0.32873914 pbr_kd_loss_interpolate_ssim: 0.10390472 pbr_occlusion_loss_interpolate_ssim: 0.00000000 pbr_roughness_loss_interpolate_ssim: 0.00000370 pbr_matellic_loss_interpolate_ssim: 0.00000022 pbr_n_loss_interpolate_ssim: 0.00003338 pbr_loss_interpolate_ssim: 1.03942025 pbr_tv_loss: 0.00652924 pbr_patch_consistency_loss_kd: 0.00000000 pbr_patch_consistency_loss_ks: 0.00000000 pbr_patch_consistency_loss_n: 0.00000000 total_loss: 1.72636938 
+Val_set1: Env.Lighting = mud_road_puresky_4k, Renderings from STEP2000 PBR: PSNR=31.152, SSIM=0.900, LPIPS=0.183, BLUR=0.460, DISTS=0.191, 
+Val_set2: Env.Lighting = mud_road_puresky_4k, Renderings from STEP2000 PBR: PSNR=34.648, SSIM=0.915, LPIPS=0.165, BLUR=0.409, DISTS=0.137, 
+Writing mesh:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/final_results_val/mesh/mesh.obj
+    writing 8505 vertices
+    writing 8505 texcoords
+    writing 8505 normals
+    writing 14288 faces
+Writing material:  /workspace/runs/pbr_sr/cradle_globe_paper_ssim10/outputs/Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64/final_results_val/mesh/mesh.mtl
+Done exporting mesh
+SR PBR -- Step:2000
+            mean L1 distance       MSE  psnr masked region  mean L1 distance whole  MSE whole  PSNR whole
+Base color          0.031624  0.003035           27.171875                0.015698   0.003434   26.636120
+Roughness           0.000360  0.000002           48.804947                0.001390   0.000063   34.437531
+Metallic            0.001848  0.000027           46.482677                0.002121   0.000243   36.932804
+Occlusion           0.015795  0.000545           33.094219                0.008345   0.000735   32.012287
+Normal              0.016951  0.003099           32.833984                0.006273   0.001139   37.181667
+DiffBIR_x4 render_sr_evaluation_dict: {'psnr_imgs1': 31.867, 'psnr_imgs2': 28.315, 'ssim_imgs1': 0.953, 'ssim_imgs2': 0.722, 'lpips_imgs1': 0.13, 'lpips_imgs2': 0.586, 'l1_imgs1': 0.01098, 'l1_imgs2': 0.02184, 'mse_imgs1': 0.00065, 'mse_imgs2': 0.00147}
+[Cradle_Globe/Adam_lr0.0001_iter2000_decaystep10000kdi_DiffBIR_x4_kdi_US_bicubic_niUS_bicubic/DiffBIR_x4_rend_res1024_pbrscale4_cambs4/_mseloss_w1.0_pbrl1_w10.0_kskdn_kdw1.0_ow0.0_rw1.0_mw0.1_nw1.0_pbrInterSSIMw10.0_kdnks_pbrloss_sr_avgpool_mask_kdw1.0_ow1.0_rw1.0_mw0.01_nw1.0_pbrtv_w0.5_pbrpatchconsistency_w0.0/_nelev15_fov10_nv50_trainenv1_scale2.0_DiffBIR_x4_diffstart_noisewrap_diffbirsteps_5/robustopt_lambda0.5_modepixel_scale100.0_lrscale100.0_pixelmapreso_64] iter: 2000 render_mse_loss_diffbir_sr4: 0.17760909 robust_opti_regularization: 0.02569758 weighted_mse_loss: 0.17760909 render_loss_sum: 0.20330666 pbr_kd_loss_l1: 0.00311766 pbr_occlusion_loss_l1: 0.00000000 pbr_roughness_loss_l1: 0.00001130 pbr_matellic_loss_l1: 0.00000178 pbr_n_loss_l1: 0.00014132 pbr_loss_l1: 0.03272057 pbr_kd_loss_interpolate_ssim: 0.00038821 pbr_occlusion_loss_interpolate_ssim: 0.00000000 pbr_roughness_loss_interpolate_ssim: -0.00000215 pbr_matellic_loss_interpolate_ssim: 0.00000011 pbr_n_loss_interpolate_ssim: -0.00000203 pbr_loss_interpolate_ssim: 0.00384140 pbr_tv_loss: 0.00729720 pbr_patch_consistency_loss_kd: 0.00000000 pbr_patch_consistency_loss_ks: 0.00000000 pbr_patch_consistency_loss_n: 0.00000000 total_loss: 0.24716583 
+
+real	25m17.659s
+user	100m46.862s
+sys	11m8.767s
+EXIT 0

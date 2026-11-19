@@ -18,3 +18,10 @@ Normal              0.015324  0.002462           32.108120                0.0059
 48cb13c103d8 2026/11/19 04:42:24 Val_set1: Env.Lighting = mud_road_puresky_4k, Renderings from STEP2000 PBR: PSNR=31.147, SSIM=0.926, LPIPS=0.183, BLUR=0.499, DISTS=0.220, 
 48cb13c103d8 2026/11/19 04:43:05 Val_set2: Env.Lighting = mud_road_puresky_4k, Renderings from STEP2000 PBR: PSNR=32.316, SSIM=0.928, LPIPS=0.189, BLUR=0.467, DISTS=0.170, 
 48cb13c103d8 2026/11/19 04:43:31 SR PBR -- Step:2000
+48cb13c103d8 2026/11/19 04:43:31 
+            mean L1 distance       MSE  psnr masked region  mean L1 distance whole  MSE whole  PSNR whole
+Base color          0.024793  0.004176           25.434673                0.015654   0.005860   24.132282
+Roughness           0.018136  0.001484           27.489857                0.035858   0.002402   25.398468
+Metallic            0.004013  0.000108           40.640015                0.003247   0.000400   34.938164
+Occlusion           0.015062  0.000509           33.102371                0.007954   0.000717   31.611778
+Normal              0.017191  0.002738           33.471008                0.007598   0.001051   37.628204
