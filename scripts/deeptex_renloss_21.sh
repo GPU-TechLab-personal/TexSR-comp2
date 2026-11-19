@@ -30,8 +30,8 @@ PAIRS=/workspace/runs/datasets/matsynth          # scripts/data.sh pairs
 GROUPED=/workspace/runs/deeptex/datasets/matsynth_grouped/matsynth_grouped_lrx4.tfrecord
 CFG=/workspace/variants/deeptex/render_loss/deeptex_renloss_21.yaml
 TRAIN="python /workspace/variants/deeptex/paper_loop/main.py --experiment render --cfg_path $CFG \
- --stage esrgan --losses upstream --shuffle off --allow-dead-lr-schedule --pretrain-dir none \
- --no-val --log-every 100 --render-monitor-every 100"
+		--stage esrgan --losses upstream --shuffle off --allow-dead-lr-schedule --pretrain-dir none \
+ 		--no-val --log-every 100 --render-monitor-every 100"
 
 attached() {  # service, command...
   local svc=$1; shift
@@ -57,12 +57,12 @@ case "${1:-}" in
   grouped)
     need runs/datasets/matsynth/pairs_manifest.json "run: bash scripts/data.sh pairs (and let it finish)"
     detached grouped deeptex "python /workspace/variants/deeptex/render_loss/build/texsr_build_grouped_tfrecord.py \
- --root $PAIRS --out $GROUPED && python /workspace/variants/deeptex/render_loss/build/texsr_verify_grouped.py \
- --tfrecord $GROUPED --root $PAIRS" ;;
+            --root $PAIRS --out $GROUPED && python /workspace/variants/deeptex/render_loss/build/texsr_verify_grouped.py \
+            --tfrecord $GROUPED --root $PAIRS" ;;
   smoke)
     need runs/deeptex/datasets/matsynth_grouped/verify_report.json "run: bash scripts/deeptex_renloss_21.sh grouped"
     detached smoke deeptex "$TRAIN --max-steps 200 --save-steps 100 \
- --checkpoint-root /workspace/runs/deeptex/deeptex_renloss_21_smoke/checkpoints --log-root /workspace/runs/deeptex/deeptex_renloss_21_smoke/logs" ;;
+            --checkpoint-root /workspace/runs/deeptex/deeptex_renloss_21_smoke/checkpoints --log-root /workspace/runs/deeptex/deeptex_renloss_21_smoke/logs" ;;
   train)
     need runs/deeptex/datasets/matsynth_grouped/verify_report.json "run: bash scripts/deeptex_renloss_21.sh grouped"
     detached train deeptex "$TRAIN" ;;

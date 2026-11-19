@@ -128,8 +128,9 @@ bash scripts/deeptex_renloss_21.sh stop train
 
 [5b] MatUp 파인튜닝 - MatUp 안의 SwinIR-L x4를 MatSynth로 (comp1에서 더 나았던 swinir_cls_ft 레시피)
 ---------------------------------------------------------------------
-# [5] 데이터 준비가 끝나 있어야 함 (deeptex_renloss_21과 같은 학습 쌍, 복사 없음). deeptex_renloss_21 학습과 GPU 같이 쓰면 안 됨
-# 20 step 시험 (1분 안팎, 끝에 EXIT 0 확인)
+# [5] 데이터 준비가 끝나 있어야 함 (deeptex_renloss_21과 같은 학습 쌍, 복사 없음)
+# deeptex_renloss_21 학습과 동시에 돌려도 됨 (5090에서 확인, 대신 deeptex가 4.0 -> 1.7 step/s로 느려짐). PBR-SR과는 같이 돌리지 말 것
+# 20 step 시험, 끝에 EXIT 0 확인
 bash scripts/matup_ft.sh smoke
 
 # 본 학습 40k step (5090에서 수 시간, 백그라운드, 끊기면 다시 실행 -> 마지막 저장 step부터 이어서)
@@ -138,6 +139,9 @@ bash scripts/matup_ft.sh train
 # 진행 상황 (상태, 로그 끝, 저장된 step, GPU) / 중지
 bash scripts/matup_ft.sh status
 bash scripts/matup_ft.sh stop
+
+# 로그 실시간 보기
+tail -f runs/logs/matup_ft.log
 
 
 [6] deeptex_renloss_21 / MatUp 결과를 PBR-SR 초기값으로 넣어서 돌리기
