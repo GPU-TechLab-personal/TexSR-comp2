@@ -171,10 +171,24 @@ INIT=matup bash variants/pbr_sr/server/run_example.sh
 INIT=matup_ft bash variants/pbr_sr/server/run_example.sh
 INIT=deeptex_renloss_21 bash variants/pbr_sr/server/run_example.sh
 
-# 진행 상황 / 로그 / 중지 (실행 이름: cradle_globe_paper_matup, _matup_ft, _deeptex_renloss_21)
+# 진행 상황 / 로그 / 중지 (실행 이름: cradle_globe_paper_{matup}, {matup_ft}, {deeptex_renloss_21})
 bash variants/pbr_sr/server/status.sh cradle_globe_paper_deeptex_renloss_21
 tail -f runs/pbr_sr/logs/cradle_globe_paper_deeptex_renloss_21.log
 docker stop pbrsr_cradle_globe_paper_deeptex_renloss_21
+
+# 결과를 다른 PC로 가져가기 (.gitignore가 렌더에 필요한 메시/텍스처/지표만 올림)
+git config core.longpaths true     # 한 번만. 실험 폴더 경로가 260자를 넘음
+git add runs && git commit -m "PBR-SR results" && git push
+
+
+[7] 결과 3D 뷰어 - GT / LR / 각 실행의 init과 최종 결과를 나란히 (Docker, GPU 필요 없음)
+---------------------------------------------------------------------
+# Python + 브라우저만 있으면 됨 (three.js를 인터넷에서 받음). 결과를 pull 받은 PC 어디서나
+python variants/pbr_sr/viewer/view.py
+# python이 없다고 나오면: py -3 variants/pbr_sr/viewer/view.py
+# 브라우저가 자동으로 열림 (http://127.0.0.1:8765/...). 끝낼 때는 터미널에서 Ctrl+C
+# 렌더 방식은 PBR-SR 렌더러와 같게 맞춤: 같은 환경맵(mud_road_puresky_4k x2), kd linear, AO = 1-ks.R 곱하기
+# 검증 시점: 고도/방위 슬라이더 -> PBR-SR final_results_val/.../set1|set2/<고도*20+방위>번 이미지와 같은 시점
 
 
 [결과 위치]
