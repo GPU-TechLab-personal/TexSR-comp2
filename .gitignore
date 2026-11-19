@@ -1,5 +1,33 @@
-# everything a run produces (datasets, checkpoints, caches, logs, outputs)
-runs/
+# everything a run produces (datasets, checkpoints, caches, logs, outputs) ...
+runs/*
+# ... except what is needed to render PBR-SR results elsewhere: per run
+# (runs/pbr_sr/<RUN>/outputs/<exp>/...) the mesh and textures of the final result,
+# of the init, and of the LR / GT inputs, plus the metric log; and the run logs.
+# Not kept: pseudo-GT cache, input copy, validation renders, tensorboard, train snapshots.
+!runs/pbr_sr/
+runs/pbr_sr/*
+!runs/pbr_sr/*/
+runs/pbr_sr/*/*
+!runs/pbr_sr/logs/*
+runs/pbr_sr/logs/*.prev_*
+!runs/pbr_sr/*/outputs/
+runs/pbr_sr/*/outputs/**
+!runs/pbr_sr/*/outputs/**/
+!runs/pbr_sr/*/outputs/**/logging.log
+!runs/pbr_sr/*/outputs/**/final_results_val/mesh/mesh.*
+!runs/pbr_sr/*/outputs/**/final_results_val/mesh/texture_kd.png
+!runs/pbr_sr/*/outputs/**/final_results_val/mesh/texture_ks.png
+!runs/pbr_sr/*/outputs/**/final_results_val/mesh/texture_n.png
+!runs/pbr_sr/*/outputs/**/final_results_val/mesh/texture_occl.png
+!runs/pbr_sr/*/outputs/**/final_results_val/mesh/texture_rough.png
+!runs/pbr_sr/*/outputs/**/final_results_val/mesh/texture_matel.png
+!runs/pbr_sr/*/outputs/**/*_mehs/mesh.*
+!runs/pbr_sr/*/outputs/**/*_mehs/texture_kd.png
+!runs/pbr_sr/*/outputs/**/*_mehs/texture_ks.png
+!runs/pbr_sr/*/outputs/**/*_mehs/texture_n.png
+!runs/pbr_sr/*/outputs/**/*_mehs/texture_occl.png
+!runs/pbr_sr/*/outputs/**/*_mehs/texture_rough.png
+!runs/pbr_sr/*/outputs/**/*_mehs/texture_matel.png
 # host-specific
 docker/.env
 # weights fetched at setup
