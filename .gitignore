@@ -28,6 +28,10 @@ runs/pbr_sr/*/outputs/**
 !runs/pbr_sr/*/outputs/**/*_mehs/texture_occl.png
 !runs/pbr_sr/*/outputs/**/*_mehs/texture_rough.png
 !runs/pbr_sr/*/outputs/**/*_mehs/texture_matel.png
+# report figures made with the viewer / montage (runs/pbr_sr/viewer/shots/*.png)
+!runs/pbr_sr/viewer/shots/
+runs/pbr_sr/viewer/shots/*
+!runs/pbr_sr/viewer/shots/*.png
 # host-specific
 docker/.env
 # weights fetched at setup
